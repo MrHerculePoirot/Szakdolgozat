@@ -51,7 +51,10 @@ def create_app():
             new_user = User(
                 username=request.form.get('username'),
                 email=request.form.get('email'),
-                password_hash=hashed_pw
+                password_hash=hashed_pw,
+                phone=request.form.get('phone'),
+                social_link=request.form.get('social_link'),
+                is_active=True # IDEIGLENESEN!!!!!!!!!: Aktív lesz a teszteléshez
             )
             db.session.add(new_user)
             db.session.commit()
@@ -62,8 +65,10 @@ def create_app():
     def login():
         if request.method == 'POST':
             user = User.query.filter_by(email=request.form.get('email')).first()
-            # Jelszó ellenőrzése a hash alapján
             if user and check_password_hash(user.password_hash, request.form.get('password')):
+                if not user.is_active:
+                    return "A fiókod még nincs hitelesítve! Ellenőrizd az e-mailedet.", 403
+            
                 login_user(user)
                 return redirect(url_for('index'))
             return "Hibás adatok!", 401

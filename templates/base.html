@@ -6,16 +6,21 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar">
+<nav class="navbar">
+    <div class="nav-left">
         <a href="/">Térkép</a>
+    </div>
+    <div class="nav-right" style="margin-left: auto;">
         {% if current_user.is_authenticated %}
-            <span>Üdv, {{ current_user.username }}!</span>
-            <a href="/logout">Kijelentkezés</a>
+            <span class="user-info">{{ current_user.username }}</span>
+            <a href="/logout" class="nav-link">Kijelentkezés</a>
         {% else %}
-            <a href="/login">Bejelentkezés</a>
-            <a href="/register">Regisztráció</a>
+            <span class="user-info">Nincs aktív fiók</span>
+            <a href="/login" class="nav-link">Bejelentkezés</a>
+            <a href="/register" class="nav-link">Regisztráció</a>
         {% endif %}
-    </nav>
+    </div>
+</nav>
     <div class="content">
         {% block content %}{% endblock %}
     </div>
