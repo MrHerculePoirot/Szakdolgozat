@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Saját állataim{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Saját bejelentéseim</h2>
+    <div class="pet-list">
+        {% for pet in pets %}
+        <div class="pet-card">
+            {% if pet.photo_path %}
+                <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) }}" class="pet-thumb">
+            {% endif %}
+            <div class="pet-info">
+                <h3>{{ pet.name or "Névtelen" }} ({{ pet.status }})</h3>
+                <p>{{ pet.breed }} - {{ pet.colour }}</p>
+                <form action="{{ url_for('delete_pet', pet_id=pet.id) }}" method="POST">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Biztosan törlöd?')">Törlés</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+            <p>Még nem töltöttél fel állatot.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

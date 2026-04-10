@@ -1,12 +1,17 @@
 import os
-from flask import Flask, request, jsonify, render_template, redirect, url_for 
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, init_app
-from models.animal import Dog, Cat, Other, Animal
+from models.address import Address
+from models.phone import PhoneNumber
 from models.user import User
+from models.animal import Animal, Dog, Cat, Other
+
+# Környezeti változók betöltése
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
@@ -147,6 +152,33 @@ def create_app():
         db.session.commit()
     
         return jsonify({"message": "Sikeres rögzítés!"}), 201
+    
+    @app.route('/my_pets')
+    @login_required
+    def my_pets():
+        # Csak a bejelentkezett felhasználó állatait kérjük le
+        user_pets = Animal.query.filter_by(user_id=current_user.id).all()
+        return render_template('my_pets.html', pets=user_pets)
+
+    @app.route('/delete_pet/<int:pet_id>', methods=['POST'])
+    @login_required
+    def delete_pet(pet_id):
+        pet = Animal.query.get_or_404(pet_id)
+        # Biztonsági ellenőrzés: csak a sajátját törölhesse
+        if pet.user_id != current_user.id:
+            return "Nincs jogosultságod!", 403
+        
+        # Ha volt képe, töröljük a fájlrendszerből is
+        if pet.photo_path:
+            try:
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], pet.photo_path))
+            except:
+                pass # Ha a fájl már nincs ott, ne szálljon el
+
+        db.session.delete(pet)
+        db.session.commit()
+        return redirect(url_for('my_pets'))
+
     return app
 
 if __name__ == '__main__':
