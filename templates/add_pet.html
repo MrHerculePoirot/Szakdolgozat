@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Új állat rögzítése{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Új állat bejelentése</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Státusz:</label>
+        <select name="status" required>
+            <option value="LOST">Elveszett</option>
+            <option value="FOUND">Talált</option>
+        </select>
+
+        <label>Típus:</label>
+        <select name="type" id="pet_type" required>
+            <option value="dog">Kutya</option>
+            <option value="cat">Macska</option>
+            <option value="other">Egyéb</option>
+        </select>
+
+        <input type="text" name="name" placeholder="Állat neve (ha ismert)">
+        <input type="text" name="breed" placeholder="Fajta (pl. Labrador)">
+        <input type="text" name="colour" placeholder="Szín (pl. zsemle, foltos)">
+        <input type="text" name="chip_id" placeholder="Chip szám (ha van)">
+        
+        <label>Fotó feltöltése (MI elemzéshez):</label>
+        <input type="file" name="photo" accept="image/*">
+
+        <button type="submit" class="btn-submit">Rögzítés</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,14 +1,12 @@
 import os
 from flask import Flask, request, jsonify, render_template, redirect, url_for 
-from flask_login import login_required, current_user
+from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, init_app
 from models.animal import Dog, Cat, Other, Animal
 from models.user import User
-from dotenv import load_dotenv
-from models.address import Address
-from models.phone import PhoneNumber
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 def create_app():
     app = Flask(__name__)
@@ -19,13 +17,13 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'SECRETKEY'
 
-    # Adatbázis inicializálása [cite: 38]
-    init_app(app)
+    # Fájlfeltöltés
+    UPLOAD_FOLDER = os.path.join('static', 'uploads')
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-    with app.app_context():
-        # Ez hozza létre a .db fájlt és a táblákat a modellek alapján
-        db.create_all()
-        print("Adatbázis táblák sikeresen létrehozva!")
+    # Adatbázis inicializálása
+    init_app(app)
 
     #---------------------------
     login_manager = LoginManager()
@@ -36,6 +34,13 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
     #---------------------------
+
+
+    with app.app_context():
+        # Ez hozza létre a .db fájlt és a táblákat a modellek alapján
+        db.create_all()
+        print("Adatbázis táblák sikeresen létrehozva!")
+
 
     @app.route('/')
     def index():
@@ -79,6 +84,36 @@ def create_app():
     def logout():
         logout_user()
         return redirect(url_for('index'))
+    
+    @app.route('/add_pet', methods=['GET', 'POST'])
+    @login_required
+    def add_pet():
+        if request.method == 'POST':
+            file = request.files.get('photo')
+            filename = None
+            if file and file.filename != '':
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            pet_type = request.form.get('type')
+            if pet_type == 'dog':
+                new_pet = Dog(breed=request.form.get('breed'))
+            elif pet_type == 'cat':
+                new_pet = Cat(breed=request.form.get('breed'))
+            else:
+                new_pet = Other(breed=request.form.get('breed'))
+
+            new_pet.name = request.form.get('name')
+            new_pet.status = request.form.get('status')
+            new_pet.colour = request.form.get('colour')
+            new_pet.chip_id = request.form.get('chip_id')
+            new_pet.photo_path = filename # Csak a nevet mentjük
+            new_pet.user_id = current_user.id
+            
+            db.session.add(new_pet)
+            db.session.commit()
+            return redirect(url_for('index'))
+        return render_template('add_pet.html')
 
     @app.route('/add_animal', methods=['POST'])
     @login_required # Csak hitelesített felhasználó érheti el 

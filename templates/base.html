@@ -6,21 +6,21 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-<nav class="navbar">
-    <div class="nav-left">
-        <a href="/">Térkép</a>
-    </div>
-    <div class="nav-right" style="margin-left: auto;">
-        {% if current_user.is_authenticated %}
-            <span class="user-info">{{ current_user.username }}</span>
-            <a href="/logout" class="nav-link">Kijelentkezés</a>
-        {% else %}
-            <span class="user-info">Nincs aktív fiók</span>
-            <a href="/login" class="nav-link">Bejelentkezés</a>
-            <a href="/register" class="nav-link">Regisztráció</a>
-        {% endif %}
-    </div>
-</nav>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/">Térkép</a>
+        </div>
+        <div class="nav-right">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('add_pet') }}" class="user-link">{{ current_user.username }}</a>
+                <a href="/logout">Kijelentkezés</a>
+            {% else %}
+                <span class="user-display">Nincs aktív fiók</span>
+                <a href="/login">Bejelentkezés</a>
+                <a href="/register">Regisztráció</a>
+            {% endif %}
+        </div>
+    </nav>
     <div class="content">
         {% block content %}{% endblock %}
     </div>
