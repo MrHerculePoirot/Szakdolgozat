@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Pet Finder{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/">Térkép</a>
+        {% if current_user.is_authenticated %}
+            <span>Üdv, {{ current_user.username }}!</span>
+            <a href="/logout">Kijelentkezés</a>
+        {% else %}
+            <a href="/login">Bejelentkezés</a>
+            <a href="/register">Regisztráció</a>
+        {% endif %}
+    </nav>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

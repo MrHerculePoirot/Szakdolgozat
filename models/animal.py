@@ -16,6 +16,11 @@ class Animal(db.Model):
     
     # Öröklődéshez szükséges oszlop
     type = db.Column(db.String(50))
+
+    ##
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    ##
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) #
     
