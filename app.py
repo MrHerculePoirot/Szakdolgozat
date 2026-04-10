@@ -2,11 +2,13 @@ import os
 from flask import Flask, request, jsonify, render_template, redirect, url_for 
 from flask_login import login_required, current_user
 from models import db, init_app
-from models.animal import Dog, Cat, Other
+from models.animal import Dog, Cat, Other, Animal
 from models.user import User
 from dotenv import load_dotenv
 from models.address import Address
 from models.phone import PhoneNumber
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 def create_app():
     app = Flask(__name__)
@@ -15,7 +17,7 @@ def create_app():
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'pet_finder.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = 'titkos-kulcs-a-szakdolgozathoz'
+    app.config['SECRET_KEY'] = 'SECRETKEY'
 
     # Adatbázis inicializálása [cite: 38]
     init_app(app)
@@ -25,20 +27,31 @@ def create_app():
         db.create_all()
         print("Adatbázis táblák sikeresen létrehozva!")
 
+    #---------------------------
+    login_manager = LoginManager()
+    login_manager.login_view = 'login'
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    #---------------------------
+
     @app.route('/')
     def index():
         api_key = os.getenv('GOOGLE_MAPS_API_KEY')
-        return render_template('map.html', api_key=api_key)
+        animals = Animal.query.all()
+        return render_template('map.html', api_key=api_key, animals=animals)
     
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
-            from models.user import User
-            # Egyszerűsített regisztráció (egyelőre hashelés nélkül a teszthez)
+            # hashelés
+            hashed_pw = generate_password_hash(request.form.get('password'))
             new_user = User(
                 username=request.form.get('username'),
                 email=request.form.get('email'),
-                password_hash=request.form.get('password') 
+                password_hash=hashed_pw
             )
             db.session.add(new_user)
             db.session.commit()
@@ -48,13 +61,19 @@ def create_app():
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
-            from models.user import User
-            from flask_login import login_user
             user = User.query.filter_by(email=request.form.get('email')).first()
-            if user and user.password_hash == request.form.get('password'):
+            # Jelszó ellenőrzése a hash alapján
+            if user and check_password_hash(user.password_hash, request.form.get('password')):
                 login_user(user)
                 return redirect(url_for('index'))
+            return "Hibás adatok!", 401
         return render_template('login.html')
+    
+    @app.route('/logout')
+    @login_required
+    def logout():
+        logout_user()
+        return redirect(url_for('index'))
 
     @app.route('/add_animal', methods=['POST'])
     @login_required # Csak hitelesített felhasználó érheti el 
