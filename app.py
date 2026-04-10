@@ -1,9 +1,12 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_login import login_required, current_user
 from models import db, init_app
 from models.animal import Dog, Cat, Other
 from models.user import User
+from dotenv import load_dotenv
+from models.address import Address
+from models.phone import PhoneNumber
 
 def create_app():
     app = Flask(__name__)
@@ -21,6 +24,11 @@ def create_app():
         # Ez hozza létre a .db fájlt és a táblákat a modellek alapján
         db.create_all()
         print("Adatbázis táblák sikeresen létrehozva!")
+
+    @app.route('/')
+    def index():
+        api_key = os.getenv('GOOGLE_MAPS_API_KEY')
+        return render_template('map.html', api_key=api_key)
 
     @app.route('/add_animal', methods=['POST'])
     @login_required # Csak hitelesített felhasználó érheti el 
@@ -43,12 +51,13 @@ def create_app():
         new_pet.chip_id = data.get('chip_id')
         
         # A kapcsolat rögzítése a bejelentkezett felhasználóval
-        new_pet.owner = current_user 
+        new_pet.user_id = current_user.id
         
         db.session.add(new_pet)
         db.session.commit()
     
-    return jsonify({"message": "Sikeres rögzítés!"}), 201
+        return jsonify({"message": "Sikeres rögzítés!"}), 201
+    return app
 
 if __name__ == '__main__':
     app = create_app()

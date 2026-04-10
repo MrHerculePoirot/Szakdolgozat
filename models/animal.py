@@ -5,13 +5,17 @@ from . import db
 class Animal(db.Model):
     __tablename__ = 'animals'
     id = db.Column(db.Integer, primary_key=True) #
-    type = db.Column(db.String(50)) # Az öröklődéshez szükséges (discriminator)
-    
     name = db.Column(db.String(100)) #
     age = db.Column(db.Integer) #
     status = db.Column(db.String(20)) # LOST/FOUND
     colour = db.Column(db.String(50)) #
     chip_id = db.Column(db.String(50)) #
+
+    # Ezt ide tesszük, hogy minden alosztály használhassa ütközés nélkül
+    breed = db.Column(db.String(100)) 
+    
+    # Öröklődéshez szükséges oszlop
+    type = db.Column(db.String(50))
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) #
     
@@ -25,13 +29,10 @@ class Animal(db.Model):
     }
 
 class Dog(Animal):
-    breed = db.Column(db.String(100)) #
     __mapper_args__ = {'polymorphic_identity': 'dog'}
 
 class Cat(Animal):
-    breed = db.Column(db.String(100)) #
     __mapper_args__ = {'polymorphic_identity': 'cat'}
 
 class Other(Animal):
-    breed = db.Column(db.String(100)) # Itt a faj megnevezése
     __mapper_args__ = {'polymorphic_identity': 'other'}
