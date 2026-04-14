@@ -16,13 +16,13 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
 
-    # Konfiguráció - SQLite adatbázis fájl létrehozása helyben [cite: 61]
+    # Konfiguráció - SQLite adatbázis fájl létrehozása helyben
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'pet_finder.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'SECRETKEY'
 
-    # Fájlfeltöltés
+    # Fájlfeltöltés beállításai
     UPLOAD_FOLDER = os.path.join('static', 'uploads')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -30,7 +30,7 @@ def create_app():
     # Adatbázis inicializálása
     init_app(app)
 
-    #---------------------------
+    # Login Manager beállítása
     login_manager = LoginManager()
     login_manager.login_view = 'login'
     login_manager.init_app(app)
@@ -38,14 +38,13 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-    #---------------------------
-
 
     with app.app_context():
         # Ez hozza létre a .db fájlt és a táblákat a modellek alapján
         db.create_all()
         print("Adatbázis táblák sikeresen létrehozva!")
 
+    # --- ÚTVONALAK (ROUTES) ---
 
     @app.route('/')
     def index():
@@ -56,7 +55,6 @@ def create_app():
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
-            # hashelés
             hashed_pw = generate_password_hash(request.form.get('password'))
             new_user = User(
                 username=request.form.get('username'),
@@ -64,7 +62,7 @@ def create_app():
                 password_hash=hashed_pw,
                 phone=request.form.get('phone'),
                 social_link=request.form.get('social_link'),
-                is_active=True # IDEIGLENESEN!!!!!!!!!: Aktív lesz a teszteléshez
+                is_active=True # IDEIGLENESEN: Aktív lesz a teszteléshez
             )
             db.session.add(new_user)
             db.session.commit()
@@ -112,7 +110,7 @@ def create_app():
             new_pet.status = request.form.get('status')
             new_pet.colour = request.form.get('colour')
             new_pet.chip_id = request.form.get('chip_id')
-            new_pet.photo_path = filename # Csak a nevet mentjük
+            new_pet.photo_path = filename
             new_pet.user_id = current_user.id
             
             db.session.add(new_pet)
@@ -121,12 +119,11 @@ def create_app():
         return render_template('add_pet.html')
 
     @app.route('/add_animal', methods=['POST'])
-    @login_required # Csak hitelesített felhasználó érheti el 
+    @login_required 
     def add_animal():
         data = request.json
         pet_type = data.get('type')
         
-        # A diagram alapján példányosítjuk a megfelelő alosztályt
         if pet_type == 'dog':
             new_pet = Dog(breed=data.get('breed'))
         elif pet_type == 'cat':
@@ -134,18 +131,12 @@ def create_app():
         else:
             new_pet = Other(breed=data.get('breed'))
             
-        # Közös attribútumok beállítása
         new_pet.name = data.get('name')
         new_pet.status = data.get('status', 'LOST')
         new_pet.colour = data.get('colour')
         new_pet.chip_id = data.get('chip_id')
-
-        # --- EZ HIÁNYZOTT: KOORDINÁTÁK MENTÉSE ---
         new_pet.latitude = data.get('latitude')
         new_pet.longitude = data.get('longitude')
-        # ----------------------------------------
-        
-        # A kapcsolat rögzítése a bejelentkezett felhasználóval
         new_pet.user_id = current_user.id
         
         db.session.add(new_pet)
@@ -156,7 +147,6 @@ def create_app():
     @app.route('/my_pets')
     @login_required
     def my_pets():
-        # Csak a bejelentkezett felhasználó állatait kérjük le
         user_pets = Animal.query.filter_by(user_id=current_user.id).all()
         return render_template('my_pets.html', pets=user_pets)
 
@@ -164,20 +154,51 @@ def create_app():
     @login_required
     def delete_pet(pet_id):
         pet = Animal.query.get_or_404(pet_id)
-        # Biztonsági ellenőrzés: csak a sajátját törölhesse
         if pet.user_id != current_user.id:
             return "Nincs jogosultságod!", 403
         
-        # Ha volt képe, töröljük a fájlrendszerből is
         if pet.photo_path:
             try:
                 os.remove(os.path.join(app.config['UPLOAD_FOLDER'], pet.photo_path))
             except:
-                pass # Ha a fájl már nincs ott, ne szálljon el
+                pass 
 
         db.session.delete(pet)
         db.session.commit()
         return redirect(url_for('my_pets'))
+
+    @app.route('/edit_pet/<int:pet_id>', methods=['GET', 'POST'])
+    @login_required
+    def edit_pet(pet_id):
+        pet = Animal.query.get_or_404(pet_id)
+        if pet.user_id != current_user.id:
+            return "Nincs jogosultságod!", 403
+
+        if request.method == 'POST':
+            pet.name = request.form.get('name')
+            pet.status = request.form.get('status')
+            pet.colour = request.form.get('colour')
+            pet.chip_id = request.form.get('chip_id')
+            pet.breed = request.form.get('breed')
+            
+            db.session.commit()
+            return redirect(url_for('my_pets'))
+            
+        return render_template('edit_pet.html', pet=pet)
+    
+    @app.route('/all_pets')
+
+    def all_pets():
+        # Az összes állat lekérése típustól függetlenül
+        all_animals = Animal.query.all()
+        
+        # Random 50 kiválasztása, ha ennél több van
+        if len(all_animals) > 50:
+            display_pets = random.sample(all_animals, 50)
+        else:
+            display_pets = all_animals
+            
+        return render_template('all_pets.html', pets=display_pets)
 
     return app
 

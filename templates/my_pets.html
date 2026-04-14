@@ -1,26 +1,32 @@
 {% extends "base.html" %}
-
-{% block title %}Saját állataim{% endblock %}
-
 {% block content %}
 <div class="container">
     <h2>Saját bejelentéseim</h2>
     <div class="pet-list">
         {% for pet in pets %}
         <div class="pet-card">
-            {% if pet.photo_path %}
-                <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) }}" class="pet-thumb">
-            {% endif %}
+            <div class="pet-media">
+                {% if pet.photo_path %}
+                    <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) }}" class="pet-thumb">
+                {% else %}
+                    <div class="pet-placeholder">{{ pet.species_type | upper }}</div>
+                {% endif %}
+            </div>
+
             <div class="pet-info">
-                <h3>{{ pet.name or "Névtelen" }} ({{ pet.status }})</h3>
+                <h3>{{ pet.name or "Névtelen" }}</h3>
+                <p><strong>Státusz:</strong> {{ pet.status }}</p>
                 <p>{{ pet.breed }} - {{ pet.colour }}</p>
-                <form action="{{ url_for('delete_pet', pet_id=pet.id) }}" method="POST">
-                    <button type="submit" class="btn-delete" onclick="return confirm('Biztosan törlöd?')">Törlés</button>
-                </form>
+                <p><small>Chip: {{ pet.chip_id or 'Nincs' }}</small></p>
+                
+                <div class="card-actions">
+                    <a href="{{ url_for('edit_pet', pet_id=pet.id) }}" class="btn-edit">Szerkesztés</a>
+                    <form action="{{ url_for('delete_pet', pet_id=pet.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-delete" onclick="return confirm('Biztosan törlöd?')">Törlés</button>
+                    </form>
+                </div>
             </div>
         </div>
-        {% else %}
-            <p>Még nem töltöttél fel állatot.</p>
         {% endfor %}
     </div>
 </div>

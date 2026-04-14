@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+    <h2>Adatok módosítása</h2>
+    <form method="POST">
+        <label>Név:</label>
+        <input type="text" name="name" value="{{ pet.name }}">
+        
+        <label>Státusz:</label>
+        <select name="status">
+            <option value="LOST" {% if pet.status == 'LOST' %}selected{% endif %}>Elveszett</option>
+            <option value="FOUND" {% if pet.status == 'FOUND' %}selected{% endif %}>Talált</option>
+        </select>
+
+        <input type="text" name="breed" value="{{ pet.breed }}" placeholder="Fajta">
+        <input type="text" name="colour" value="{{ pet.colour }}" placeholder="Szín">
+        <input type="text" name="chip_id" value="{{ pet.chip_id }}" placeholder="Chip szám">
+        
+        <button type="submit" class="btn-submit">Mentés</button>
+        <a href="{{ url_for('my_pets') }}">Mégse</a>
+    </form>
+</div>
+{% endblock %}

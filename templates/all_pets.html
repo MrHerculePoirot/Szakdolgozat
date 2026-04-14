@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Közösségi bejelentések{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="page-title">Aktuális bejelentések</h2>
+    <div class="pet-grid">
+        {% for pet in pets %}
+        <div class="pet-card">
+            <div class="pet-media">
+                {% if pet.photo_path %}
+                    <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) }}" class="pet-thumb">
+                {% else %}
+                    <div class="pet-placeholder">
+                        {{ "KUTYA" if pet.type == 'dog' else "MACSKA" if pet.type == 'cat' else "EGYÉB" }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="pet-info">
+                <h3>{{ pet.name or "Névtelen" }}</h3>
+                <p class="status-badge {{ pet.status | lower }}"><strong>Státusz:</strong> {{ pet.status }}</p>
+                <p class="pet-details">{{ pet.breed }} - {{ pet.colour }}</p>
+                <p class="chip-info">Chip: {{ pet.chip_id or 'Nem ismert' }}</p>
+                
+                <div class="card-footer">
+                    <small>Bejelentő: {{ pet.owner.username }}</small>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <p class="empty-msg">Jelenleg nincs megjeleníthető bejelentés.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
