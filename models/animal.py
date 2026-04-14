@@ -20,6 +20,7 @@ class Animal(db.Model):
     ##
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
+    photo_path = db.Column(db.String(255), nullable=True)
     ##
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) #
