@@ -2,7 +2,6 @@
 echo [1/4] Virtualis kornyezet aktivalasa...
 call venv\Scripts\activate
 
-
 echo [2/4] Szukseges csomagok frissitese...
 pip install flask flask-sqlalchemy flask-login python-dotenv
 

@@ -1,11 +1,10 @@
 @echo off
-:: UTF-8 kódolás az ékezetek miatt
+:: Ha nem UTF-8 a kódolás az ékezeteket nem tudja nromálisan kezelniss
 chcp 65001 > nul
 
-:: Itt a kettőspont után kell várnia a szöveget
 set /p comment="Add meg a módosítás leírását: "
 
-:: Ha üresen hagyod, kap egy dátumos alapértelmezettet
+:: Ha nem írok semmit akk dátum szerint frissíti/nevezi el
 if "%comment%"=="" set comment="Automatikus frissites - %date% %time%"
 
 echo [1/3] Fajlok hozzaadasa...

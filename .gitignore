@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 venv/
 .env
-# Adatbázis (ne kerüljön fel a lokális db fájl)
+# Adatbázis (hogy ne kerüljön fel a lokális db fájl)
 *.db
 # VS Code beállítások
 .vscode/

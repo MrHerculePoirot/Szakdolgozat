@@ -16,7 +16,7 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
 
-    # Konfiguráció - SQLite adatbázis fájl létrehozása helyben
+    # Konfig -> SQLite adatbázis file létrehozása
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'pet_finder.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -27,7 +27,7 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-    # Adatbázis inicializálása
+    # Adatbázis létrehozása
     init_app(app)
 
     # Login Manager beállítása
@@ -40,11 +40,11 @@ def create_app():
         return User.query.get(int(user_id))
 
     with app.app_context():
-        # Ez hozza létre a .db fájlt és a táblákat a modellek alapján
+        # .db file és táblák létrehozása
         db.create_all()
         print("Adatbázis táblák sikeresen létrehozva!")
 
-    # --- ÚTVONALAK (ROUTES) ---
+    # ---Útvonalak---
 
     @app.route('/')
     def index():
@@ -62,7 +62,7 @@ def create_app():
                 password_hash=hashed_pw,
                 phone=request.form.get('phone'),
                 social_link=request.form.get('social_link'),
-                is_active=True # IDEIGLENESEN: Aktív lesz a teszteléshez
+                is_active=True # IDEIGLENESEN: Aktív lesz a teszteléshez - nem megy a visszaigazolás
             )
             db.session.add(new_user)
             db.session.commit()
@@ -189,10 +189,10 @@ def create_app():
     @app.route('/all_pets')
 
     def all_pets():
-        # Az összes állat lekérése típustól függetlenül
+        # Az összes állat lekérése - egylőre mindegy, hogy LOST/FOUND
         all_animals = Animal.query.all()
         
-        # Random 50 kiválasztása, ha ennél több van
+        # Random max 50 db kiválasztása
         if len(all_animals) > 50:
             display_pets = random.sample(all_animals, 50)
         else:
