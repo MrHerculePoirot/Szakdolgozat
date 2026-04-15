@@ -10,15 +10,14 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    ##google_id = db.Column(db.String(128), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     
     phone = db.Column(db.String(20), nullable=True) 
-    social_link = db.Column(db.String(200), nullable=True) # Opcionális mező
+    social_link = db.Column(db.String(200), nullable=True) # Nem kötelező, pcionális mező
     
     is_active = db.Column(db.Boolean, default=False)
     
-    # Kapcsolatok (Aggregation/Association)
+    # Aggregáció/asszociáció
     contact_id = db.Column(db.Integer, db.ForeignKey('phone_numbers.id'))
     address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
     

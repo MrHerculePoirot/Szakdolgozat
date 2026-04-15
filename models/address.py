@@ -11,6 +11,6 @@ class Address(db.Model):
 
     #FIGYELEM!! EZ LEHET NEM KELL!!
 
-    # Google Maps koordináták [cite: 54, 77]
+    # Google Maps koordináták
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
