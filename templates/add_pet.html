@@ -22,7 +22,12 @@
         <input type="text" name="name" placeholder="Állat neve (ha ismert)">
         <input type="text" name="breed" placeholder="Fajta (pl. Labrador)">
         <input type="text" name="colour" placeholder="Szín (pl. zsemle, foltos)">
-        <input type="text" name="chip_id" placeholder="Chip szám (ha van)">
+        <input type="text" 
+               name="chip_id" 
+               placeholder="Chip szám (pontosan 15 számjegy)" 
+               pattern="\d{15}" 
+               title="A chipszámnak pontosan 15 számjegyből kell állnia!"
+               maxlength="15">
         
         <label>Fotó feltöltése (MI elemzéshez):</label>
         <input type="file" name="photo" accept="image/*">

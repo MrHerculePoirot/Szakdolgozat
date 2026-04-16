@@ -28,6 +28,7 @@ class Animal(db.Model):
 
     home_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
     last_seen_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
+    chip_id = db.Column(db.String(15), nullable=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'animal',

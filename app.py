@@ -92,6 +92,11 @@ def create_app():
     @login_required
     def add_pet():
         if request.method == 'POST':
+            chip_id = request.form.get('chip_id')
+            if chip_id and (not chip_id.isdigit() or len(chip_id) != 15):
+                return "Hiba: A chipszámnak pontosan 15 számjegyből kell állnia!", 400
+
+
             file = request.files.get('photo')
             filename = None
             if file and file.filename != '':
