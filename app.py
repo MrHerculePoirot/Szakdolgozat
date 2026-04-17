@@ -92,6 +92,56 @@ def create_app():
     @login_required
     def add_pet():
         if request.method == 'POST':
+            # 1. Cím adatok kinyerése
+            country = request.form.get('country')
+            city = request.form.get('city')
+            street = request.form.get('street')
+
+            # 2. Új cím létrehozása és mentése
+            new_address = Address(
+                country=country,
+                city=city,
+                street=street
+            )
+            db.session.add(new_address)
+            db.session.flush() # Így már kap egy ID-t az adatbázistól
+
+            # 3. Állat példányosítása (Dog/Cat/Other)
+            pet_type = request.form.get('type')
+            if pet_type == 'dog':
+                new_pet = Dog(breed=request.form.get('breed'))
+            elif pet_type == 'cat':
+                new_pet = Cat(breed=request.form.get('breed'))
+            else:
+                new_pet = Other(breed=request.form.get('breed'))
+
+            # 4. Adatok összefűzése
+            new_pet.name = request.form.get('name')
+            new_pet.status = request.form.get('status')
+            new_pet.colour = request.form.get('colour')
+            new_pet.chip_id = request.form.get('chip_id')
+            new_pet.user_id = current_user.id
+            new_pet.last_seen_address_id = new_address.id # A cím összekötése
+
+            # Fotó kezelése...
+            file = request.files.get('photo')
+            if file and file.filename != '':
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                new_pet.photo_path = filename
+
+            db.session.add(new_pet)
+            db.session.commit()
+            return redirect(url_for('my_pets'))
+            
+        return render_template('add_pet.html')
+
+
+    """
+    @app.route('/add_pet', methods=['GET', 'POST'])
+    @login_required
+    def add_pet():
+        if request.method == 'POST':
             chip_id = request.form.get('chip_id')
             if chip_id and (not chip_id.isdigit() or len(chip_id) != 15):
                 return "Hiba: A chipszámnak pontosan 15 számjegyből kell állnia!", 400
@@ -121,7 +171,11 @@ def create_app():
             db.session.add(new_pet)
             db.session.commit()
             return redirect(url_for('index'))
+        
+        
         return render_template('add_pet.html')
+
+    """
 
     @app.route('/add_animal', methods=['POST'])
     @login_required 
