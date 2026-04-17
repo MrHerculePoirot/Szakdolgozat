@@ -130,6 +130,7 @@ def create_app():
             new_pet.age = request.form.get('age')
             new_pet.age_unit = request.form.get('age_unit')
             new_pet.is_neutered = request.form.get('is_neutered') == 'true'
+            new_pet.description = request.form.get('description')
             new_pet.user_id = current_user.id
             new_pet.last_seen_address_id = new_address.id # Itt kapcsoljuk össze!
 

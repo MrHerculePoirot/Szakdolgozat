@@ -17,6 +17,7 @@ class Animal(db.Model):
     
     is_neutered = db.Column(db.Boolean, default=False)
     type = db.Column(db.String(50))
+    description = db.Column(db.Text, nullable=True)
 
 
     latitude = db.Column(db.Float)
