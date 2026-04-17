@@ -4,7 +4,7 @@
     <h2>Adatok módosítása</h2>
     <form method="POST">
         <label>Név:</label>
-        <input type="text" name="name" value="{{ pet.name }}">
+        <input type="text" name="name" value="{{ pet.name or '' }}" placeholder="Állat neve (ha ismert)">
         
         <label>Státusz:</label>
         <select name="status">
@@ -12,9 +12,55 @@
             <option value="FOUND" {% if pet.status == 'FOUND' %}selected{% endif %}>Talált</option>
         </select>
 
-        <input type="text" name="breed" value="{{ pet.breed }}" placeholder="Fajta">
-        <input type="text" name="colour" value="{{ pet.colour }}" placeholder="Szín">
-        <input type="text" name="chip_id" value="{{ pet.chip_id }}" placeholder="Chip szám">
+        <label>Fajta:</label>
+        <input type="text" name="breed" value="{{ pet.breed or '' }}" placeholder="Fajta (pl. Labrador)">
+        
+        <label>Szín:</label>
+        <input type="text" name="colour" value="{{ pet.colour or '' }}" placeholder="Szín (pl. zsemle, foltos)">
+        
+        <label>Chip szám:</label>
+        <input type="text" 
+               name="chip_id" 
+               value="{{ pet.chip_id or '' }}"
+               placeholder="Chip szám (pontosan 15 számjegy)" 
+               pattern="\d{15}" 
+               title="A chipszámnak pontosan 15 számjegyből kell állnia!"
+               maxlength="15">
+
+        <div class="location-section">
+            <h3>Helyszín adatai</h3>
+            <label>Ország:</label>
+            <input type="text" name="country" value="{{ pet.last_seen_address.country if pet.last_seen_address else '' }}" placeholder="Magyarország" required>
+
+            <label>Város:</label>
+            <input type="text" name="city" value="{{ pet.last_seen_address.city if pet.last_seen_address else '' }}" placeholder="Budapest" required>
+
+            <label>Irányítószám:</label>
+            <input type="text" name="postcode" value="{{ pet.last_seen_address.postcode if pet.last_seen_address else '' }}" placeholder="1051">
+
+            <label>Utca:</label>
+            <input type="text" name="street" value="{{ pet.last_seen_address.street if pet.last_seen_address else '' }}" placeholder="Példa utca 12.">
+        </div>
+
+        <label>Állat kora:</label>
+        <div style="display: flex; gap: 10px;">
+            <input type="number" name="age" value="{{ pet.age or '' }}" placeholder="Mennyi idős?" min="0" style="flex: 2;">
+            <select name="age_unit" style="flex: 1;">
+                <option value="nap" {% if pet.age_unit == 'nap' %}selected{% endif %}>nap</option>
+                <option value="hét" {% if pet.age_unit == 'hét' %}selected{% endif %}>hét</option>
+                <option value="hónap" {% if pet.age_unit == 'hónap' or not pet.age_unit %}selected{% endif %}>hónap</option>
+                <option value="év" {% if pet.age_unit == 'év' %}selected{% endif %}>év</option>
+            </select>
+        </div>
+
+        <label>Ivartalanított?</label>
+        <select name="is_neutered">
+            <option value="false" {% if not pet.is_neutered %}selected{% endif %}>Ivaros (nem)</option>
+            <option value="true" {% if pet.is_neutered %}selected{% endif %}>Ivartalanított (igen)</option>
+        </select>
+
+        <label>Leírás:</label>
+        <textarea name="description" placeholder="Leírás..." rows="4">{{ pet.description or '' }}</textarea>
         
         <button type="submit" class="btn-submit">Mentés</button>
         <a href="{{ url_for('my_pets') }}">Mégse</a>

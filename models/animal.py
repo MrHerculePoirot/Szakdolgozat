@@ -28,8 +28,13 @@ class Animal(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
 
-    home_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
-    last_seen_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
+    # A korábbi home_address_id és last_seen_address_id helyett:
+    location_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
+
+    # Adjunk hozzá egy kapcsolatot is a könnyebb eléréshez:
+    location = db.relationship('Address', foreign_keys=[location_id])
+    
+    
     chip_id = db.Column(db.String(15), nullable=True)
 
     __mapper_args__ = {
