@@ -222,6 +222,11 @@ def create_app():
         if name_search:
             query = query.filter(Animal.name.ilike(f'%{name_search}%'))
 
+        #######
+        gender_search = request.args.get('gender')
+        if gender_search and gender_search != 'all':
+            query = query.filter(Animal.gender == gender_search)
+
         # 3. CHIPSZÁM szűrés (külön mező a HTML-ben)
         chip_search = request.args.get('chip_id', '').strip()
         if chip_search:

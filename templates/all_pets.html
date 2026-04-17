@@ -58,6 +58,15 @@
                 </div>
 
                 <div class="filter-group">
+                    <label>Neme</label>
+                    <select name="gender">
+                        <option value="all">Mindegy</option>
+                        <option value="Hím" {% if request.args.get('gender') == 'Hím' %}selected{% endif %}>Hím</option>
+                        <option value="Nőstény" {% if request.args.get('gender') == 'Nőstény' %}selected{% endif %}>Nőstény</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
                     <label>Chipszám</label>
                     <input type="text" name="chip_id" placeholder="15 jegyű szám" value="{{ request.args.get('chip_id', '') }}">
                 </div>

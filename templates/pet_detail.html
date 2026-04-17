@@ -15,15 +15,18 @@
             <h3>Alapadatok</h3>
             <p><strong>Fajta:</strong> {{ pet.breed }}</p>
             <p><strong>Szín:</strong> {{ pet.colour }}</p>
+            <p><strong>Neme:</strong> {{ pet.gender }}</p>
             <p><strong>Kor:</strong> {{ pet.age }} {{ pet.age_unit }}</p>
             <p><strong>Ivartalanított:</strong> {{ 'Igen' if pet.is_neutered else 'Nem' }}</p>
             <p><strong>Chip szám:</strong> {{ pet.chip_id or 'Nincs megadva' }}</p>
 
             <h3>Helyszín</h3>
             <p>
-                {{ pet.location.postcode if pet.location }} 
-                {{ pet.location.city if pet.location }}, 
-                {{ pet.location.street if pet.location }}
+                {% if pet.location %}
+                    {{ pet.location.country }}, {{ pet.location.postcode }} {{ pet.location.city }}, {{ pet.location.street }}
+                {% else %}
+                    Nincs megadott helyszín
+                {% endif %}
             </p>
 
             <h3>Kapcsolat</h3>

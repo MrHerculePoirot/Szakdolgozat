@@ -14,6 +14,12 @@
 
         <label>Fajta:</label>
         <input type="text" name="breed" value="{{ pet.breed or '' }}" placeholder="Fajta (pl. Labrador)">
+
+        <label>Neme:</label>
+        <select name="gender" required>
+            <option value="Hím" {% if pet and pet.gender == 'Hím' %}selected{% endif %}>Hím</option>
+            <option value="Nőstény" {% if pet and pet.gender == 'Nőstény' %}selected{% endif %}>Nőstény</option>
+        </select>
         
         <label>Szín:</label>
         <select name="colour">
