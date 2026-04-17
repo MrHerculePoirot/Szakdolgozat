@@ -14,7 +14,7 @@ class Animal(db.Model):
     # Ezt ide tesszük, hogy minden alosztály használhassa anélkül, hogy ütközne
     breed = db.Column(db.String(100)) 
     
-
+    is_neutered = db.Column(db.Boolean, default=False)
     type = db.Column(db.String(50))
 
 

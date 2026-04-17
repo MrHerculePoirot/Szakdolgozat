@@ -4,10 +4,11 @@ from . import db
 
 class Address(db.Model):
     __tablename__ = 'addresses'
-    id = db.Column(db.Integer, primary_key=True) #
-    country = db.Column(db.String(100)) #
-    city = db.Column(db.String(100)) #
-    street = db.Column(db.String(255)) #
+    id = db.Column(db.Integer, primary_key=True)
+    country = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    street = db.Column(db.String(255))
+    postcode = db.Column(db.String(20))
 
     #FIGYELEM!! EZ LEHET NEM KELL!!
 

@@ -37,9 +37,18 @@
             <label>Város (Kötelező):</label>
             <input type="text" name="city" placeholder="Budapest" required>
 
+            <label>Irányítószám (Opcionális):</label>
+            <input type="text" name="postcode" placeholder="1051">
+
             <label>Utca (Opcionális):</label>
             <input type="text" name="street" placeholder="Példa utca 12.">
         </div>
+
+        <label>Ivartalanított?</label>
+        <select name="is_neutered">
+            <option value="false">Ivaros (nem)</option>
+            <option value="true">Ivartalanított (igen)</option>
+        </select>
         
         <label>Fotó feltöltése (MI elemzéshez):</label>
         <input type="file" name="photo" accept="image/*">
