@@ -127,6 +127,8 @@ def create_app():
             new_pet.status = request.form.get('status')
             new_pet.colour = request.form.get('colour')
             new_pet.chip_id = chip_id
+            new_pet.age = request.form.get('age')
+            new_pet.age_unit = request.form.get('age_unit')
             new_pet.is_neutered = request.form.get('is_neutered') == 'true'
             new_pet.user_id = current_user.id
             new_pet.last_seen_address_id = new_address.id # Itt kapcsoljuk össze!
@@ -144,47 +146,6 @@ def create_app():
             return redirect(url_for('my_pets'))
             
         return render_template('add_pet.html')
-
-
-    """
-    @app.route('/add_pet', methods=['GET', 'POST'])
-    @login_required
-    def add_pet():
-        if request.method == 'POST':
-            chip_id = request.form.get('chip_id')
-            if chip_id and (not chip_id.isdigit() or len(chip_id) != 15):
-                return "Hiba: A chipszámnak pontosan 15 számjegyből kell állnia!", 400
-
-
-            file = request.files.get('photo')
-            filename = None
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-            pet_type = request.form.get('type')
-            if pet_type == 'dog':
-                new_pet = Dog(breed=request.form.get('breed'))
-            elif pet_type == 'cat':
-                new_pet = Cat(breed=request.form.get('breed'))
-            else:
-                new_pet = Other(breed=request.form.get('breed'))
-
-            new_pet.name = request.form.get('name')
-            new_pet.status = request.form.get('status')
-            new_pet.colour = request.form.get('colour')
-            new_pet.chip_id = request.form.get('chip_id')
-            new_pet.photo_path = filename
-            new_pet.user_id = current_user.id
-            
-            db.session.add(new_pet)
-            db.session.commit()
-            return redirect(url_for('index'))
-        
-        
-        return render_template('add_pet.html')
-
-    """
 
     @app.route('/add_animal', methods=['POST'])
     @login_required 

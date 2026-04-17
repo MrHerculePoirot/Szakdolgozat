@@ -7,6 +7,7 @@ class Animal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     age = db.Column(db.Integer)
+    age_unit = db.Column(db.String(20))
     status = db.Column(db.String(20)) # LOST/FOUND
     colour = db.Column(db.String(50))
     chip_id = db.Column(db.String(50))
