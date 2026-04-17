@@ -183,6 +183,14 @@ def create_app():
             db.session.commit()
             return redirect(url_for('my_pets'))
         return render_template('edit_pet.html', pet=pet)
+    
+    ######################xxxx
+    @app.route('/pet/<int:pet_id>')
+    def pet_detail(pet_id):
+        # Lekérjük az állatot az ID alapján
+        pet = Animal.query.get_or_404(pet_id)
+        return render_template('pet_detail.html', pet=pet)
+    #######################
 
     @app.route('/delete_pet/<int:pet_id>', methods=['POST'])
     @login_required

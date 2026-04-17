@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pet-detail-container">
+    <div class="detail-header">
+        <h1>{{ pet.name or 'Névtelen állat' }}</h1>
+        <span class="status-badge {{ pet.status.lower() }}">{{ pet.status }}</span>
+    </div>
+
+    <div class="detail-main">
+        <div class="detail-image">
+            <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) if pet.photo_path else url_for('static', filename='placeholder.png') }}" alt="{{ pet.name }}">
+        </div>
+
+        <div class="detail-info">
+            <h3>Alapadatok</h3>
+            <p><strong>Fajta:</strong> {{ pet.breed }}</p>
+            <p><strong>Szín:</strong> {{ pet.colour }}</p>
+            <p><strong>Kor:</strong> {{ pet.age }} {{ pet.age_unit }}</p>
+            <p><strong>Ivartalanított:</strong> {{ 'Igen' if pet.is_neutered else 'Nem' }}</p>
+            <p><strong>Chip szám:</strong> {{ pet.chip_id or 'Nincs megadva' }}</p>
+
+            <h3>Helyszín</h3>
+            <p>
+                {{ pet.location.postcode if pet.location }} 
+                {{ pet.location.city if pet.location }}, 
+                {{ pet.location.street if pet.location }}
+            </p>
+
+            <h3>Kapcsolat</h3>
+            <p><strong>Bejelentő telefonja:</strong> {{ pet.owner.phone }}</p>
+        </div>
+    </div>
+
+    {% if pet.description %}
+    <div class="detail-description">
+        <h3>Leírás</h3>
+        <p>{{ pet.description }}</p>
+    </div>
+    {% endif %}
+
+    <div class="detail-footer">
+        <a href="{{ url_for('all_pets') }}" class="btn">Vissza az összes állathoz</a>
+    </div>
+</div>
+{% endblock %}
