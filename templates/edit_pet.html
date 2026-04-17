@@ -16,7 +16,11 @@
         <input type="text" name="breed" value="{{ pet.breed or '' }}" placeholder="Fajta (pl. Labrador)">
         
         <label>Szín:</label>
-        <input type="text" name="colour" value="{{ pet.colour or '' }}" placeholder="Szín (pl. zsemle, foltos)">
+        <select name="colour">
+            {% for c in ['fehér','fekete','barna','világosbarna','bézs','zsemle','szürke','tarka','foltos','narancssárga','egyéb'] %}
+                <option value="{{ c }}" {% if pet.colour == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
         
         <label>Chip szám:</label>
         <input type="text" 

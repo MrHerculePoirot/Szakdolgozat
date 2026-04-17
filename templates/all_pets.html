@@ -1,54 +1,91 @@
 {% extends "base.html" %}
 
-{% block title %}Közösségi bejelentések{% endblock %}
-
 {% block content %}
-<style>
-    .pet-card-link {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-    }
-    .pet-info p {
-        margin: 4px 0; /* Kisebb térköz a sorok között */
-        line-height: 1.2;
-    }
-    .pet-info h3 {
-        margin-bottom: 8px;
-    }
-</style>
-
 <div class="container">
     <h2 class="page-title">Aktuális bejelentések</h2>
-    <div class="pet-grid">
-        {% for pet in pets %}
-        <a href="{{ url_for('pet_detail', pet_id=pet.id) }}" target="_blank" class="pet-card-link">
-            <div class="pet-card">
-                <div class="pet-media">
-                    {% if pet.photo_path %}
-                        <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) }}" class="pet-thumb">
-                    {% else %}
-                        <div class="pet-placeholder">
-                            {{ "KUTYA" if pet.type == 'dog' else "MACSKA" if pet.type == 'cat' else "EGYÉB" }}
-                        </div>
-                    {% endif %}
-                </div>
 
-                <div class="pet-info">
-                    <h3>{{ pet.name or "Névtelen" }}</h3>
-                    <p class="status-badge {{ pet.status | lower }}"><strong>Státusz:</strong> {{ pet.status }}</p>
-                    <p class="pet-details">{{ pet.breed }} - {{ pet.colour }}</p>
-                    <p class="chip-info">Chip: {{ pet.chip_id or 'Nem ismert' }}</p>
-                    
-                    <div class="card-footer">
-                        <small>Bejelentő: {{ pet.owner.phone }}</small> <!--owner/user-->
+    <div class="main-content-layout">
+        
+        <div class="pet-grid">
+            {% for pet in pets %}
+            <a href="{{ url_for('pet_detail', pet_id=pet.id) }}" target="_blank" class="pet-card-link">
+                <div class="pet-card">
+                    <div class="pet-media">
+                        {% if pet.photo_path %}
+                            <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) }}" class="pet-thumb">
+                        {% else %}
+                            <div class="pet-placeholder">
+                                {{ "KUTYA" if pet.type == 'dog' else "MACSKA" if pet.type == 'cat' else "EGYÉB" }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pet-info">
+                        <h3>{{ pet.name or "Névtelen" }}</h3>
+                        <p class="status-badge {{ pet.status | lower }}"><strong>Státusz:</strong> {{ pet.status }}</p>
+                        <p class="pet-details">
+                            {{ pet.breed }} - {{ pet.colour }} ({{ pet.age }} {{ pet.age_unit }})
+                        </p>
+                        <p class="chip-info">Chip: {{ pet.chip_id or 'Nem ismert' }}</p>
+                        
+                        <div class="card-footer">
+                            <small>Bejelentő: {{ pet.owner.phone }}</small>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </a>
-        {% else %}
-            <p>Nincsenek aktuális bejelentések.</p>
-        {% endfor %}
+            </a>
+            {% else %}
+                <p class="empty-msg">Nincs a szűrésnek megfelelő találat.</p>
+            {% endfor %}
+        </div>
+
+        <aside class="sidebar-filter">
+            <h3>Szűrés</h3>
+            <form method="GET" action="{{ url_for('all_pets') }}" class="filter-form-sidebar">
+                <div class="filter-group">
+                    <label>Típus</label>
+                    <select name="type">
+                        <option value="all">Összes</option>
+                        <option value="dog" {% if request.args.get('type') == 'dog' %}selected{% endif %}>Kutya</option>
+                        <option value="cat" {% if request.args.get('type') == 'cat' %}selected{% endif %}>Macska</option>
+                        <option value="other" {% if request.args.get('type') == 'other' %}selected{% endif %}>Egyéb</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Állat neve</label>
+                    <input type="text" name="name" placeholder="Név keresése..." value="{{ request.args.get('name', '') }}">
+                </div>
+
+                <div class="filter-group">
+                    <label>Chipszám</label>
+                    <input type="text" name="chip_id" placeholder="15 jegyű szám" value="{{ request.args.get('chip_id', '') }}">
+                </div>
+
+                <div class="filter-group">
+                    <label>Helyszín</label>
+                    <input type="text" name="location" placeholder="Város/Ország" value="{{ request.args.get('location', '') }}">
+                </div>
+
+                <div class="filter-group">
+                    <label>Kor (tól-ig)</label>
+                    <div class="age-inputs">
+                        <input type="number" name="age_min" placeholder="Min" value="{{ request.args.get('age_min', '') }}">
+                        <input type="number" name="age_max" placeholder="Max" value="{{ request.args.get('age_max', '') }}">
+                    </div>
+                    <select name="age_unit" style="margin-top: 5px;">
+                        <option value="nap" {% if request.args.get('age_unit') == 'nap' %}selected{% endif %}>nap</option>
+                        <option value="hét" {% if request.args.get('age_unit') == 'hét' %}selected{% endif %}>hét</option>
+                        <option value="hónap" {% if request.args.get('age_unit') == 'hónap' or not request.args.get('age_unit') %}selected{% endif %}>hónap</option>
+                        <option value="év" {% if request.args.get('age_unit') == 'év' %}selected{% endif %}>év</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="filter-btn">Szűrés</button>
+                <a href="{{ url_for('all_pets') }}" class="btn-clear">Összes mutatása</a>
+            </form>
+        </aside>
+
     </div>
 </div>
 {% endblock %}

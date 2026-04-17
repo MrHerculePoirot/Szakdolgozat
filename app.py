@@ -207,15 +207,104 @@ def create_app():
         db.session.commit()
         return redirect(url_for('my_pets'))
     
+
     @app.route('/all_pets')
     def all_pets():
-        all_animals = Animal.query.all()
-        if len(all_animals) > 50:
-            display_pets = random.sample(all_animals, 50)
-        else:
-            display_pets = all_animals
+        query = Animal.query
+
+        # 1. Típus szűrés
+        pet_type = request.args.get('type')
+        if pet_type and pet_type != 'all':
+            query = query.filter(Animal.type == pet_type)
+
+        # 2. NÉV szűrés (külön mező a HTML-ben)
+        name_search = request.args.get('name', '').strip()
+        if name_search:
+            query = query.filter(Animal.name.ilike(f'%{name_search}%'))
+
+        # 3. CHIPSZÁM szűrés (külön mező a HTML-ben)
+        chip_search = request.args.get('chip_id', '').strip()
+        if chip_search:
+            query = query.filter(Animal.chip_id == chip_search)
+
+        # 4. Helyszín szűrés
+        loc_search = request.args.get('location', '').strip()
+        if loc_search:
+            query = query.join(Address).filter(
+                (Address.city.ilike(f'%{loc_search}%')) | 
+                (Address.country.ilike(f'%{loc_search}%'))
+            )
+
+        # 5. Kor és MÉRTÉKEGYSÉG szűrés
+            # Kor szűrése az app.py-ban
+        age_min = request.args.get('age_min')
+        age_max = request.args.get('age_max')
+        age_unit = request.args.get('age_unit')
+
+        # Csak akkor szűrünk az egységre, ha van megadva számérték (min vagy max)
+        if (age_min and age_min.strip()) or (age_max and age_max.strip()):
+            if age_min and age_min.strip():
+                query = query.filter(Animal.age >= int(age_min))
+            if age_max and age_max.strip():
+                query = query.filter(Animal.age <= int(age_max))
+            # Mivel van számérték, ekkor már kötelezően szűrünk a kiválasztott egységre is
+            if age_unit:
+                query = query.filter(Animal.age_unit == age_unit)
+
+        display_pets = query.all()
+        
+        # Limit csak ha nincs szűrés
+        if not any([pet_type != 'all' and pet_type, name_search, chip_search, loc_search, age_min, age_max]) and len(display_pets) > 50:
+            display_pets = random.sample(display_pets, 50)
+
         return render_template('all_pets.html', pets=display_pets)
 
+
+    """
+    @app.route('/all_pets')
+    def all_pets():
+        # Alaphelyzetben az összes állat lekérése
+        query = Animal.query
+
+        # 1. Típus szűrés - Csak ha nem 'all' és van érték
+        pet_type = request.args.get('type')
+        if pet_type and pet_type != 'all':
+            query = query.filter(Animal.type == pet_type)
+
+        # 2. Név vagy Chip szűrés - Csak ha beírtál valamit
+        search = request.args.get('search', '').strip()
+        if search:
+            query = query.filter(
+                (Animal.name.ilike(f'%{search}%')) | 
+                (Animal.chip_id.ilike(f'%{search}%'))
+            )
+
+        # 3. Helyszín szűrés - Csak ha beírtál várost vagy országot
+        loc_search = request.args.get('location', '').strip()
+        if loc_search:
+            query = query.join(Address).filter(
+                (Address.city.ilike(f'%{loc_search}%')) | 
+                (Address.country.ilike(f'%{loc_search}%'))
+            )
+
+        # 4. Kor szerinti szűrés - Csak ha megadtál számot
+        age_min = request.args.get('age_min')
+        age_max = request.args.get('age_max')
+        
+        if age_min and age_min.strip():
+            query = query.filter(Animal.age >= int(age_min))
+        if age_max and age_max.strip():
+            query = query.filter(Animal.age <= int(age_max))
+
+        # Itt hajtódik végre a lekérdezés a fenti szűrőkkel (vagy szűrők nélkül)
+        display_pets = query.all()
+        
+        # Opcionális: 50-es limit megőrzése a teljes listánál
+        if not any([pet_type != 'all' and pet_type, search, loc_search, age_min, age_max]) and len(display_pets) > 50:
+            display_pets = random.sample(display_pets, 50)
+
+        return render_template('all_pets.html', pets=display_pets)
+    """
     return app
 
 if __name__ == '__main__':

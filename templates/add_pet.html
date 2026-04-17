@@ -21,7 +21,22 @@
 
         <input type="text" name="name" placeholder="Állat neve (ha ismert)">
         <input type="text" name="breed" placeholder="Fajta (pl. Labrador)">
-        <input type="text" name="colour" placeholder="Szín (pl. zsemle, foltos)">
+        
+        <label>Szín:</label>
+        <select name="colour" required>
+            <option value="fehér">fehér</option>
+            <option value="fekete">fekete</option>
+            <option value="barna">barna</option>
+            <option value="világosbarna">világosbarna</option>
+            <option value="bézs">bézs</option>
+            <option value="zsemle">zsemle</option>
+            <option value="szürke">szürke</option>
+            <option value="tarka">tarka</option>
+            <option value="foltos">foltos</option>
+            <option value="narancssárga">narancssárga</option>
+            <option value="egyéb">egyéb</option>
+        </select>
+
         <input type="text" 
                name="chip_id" 
                placeholder="Chip szám (pontosan 15 számjegy)" 
