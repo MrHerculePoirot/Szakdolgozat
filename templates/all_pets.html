@@ -12,7 +12,9 @@
                 <div class="pet-card">
                     <div class="pet-media">
                         {% if pet.photo_path %}
-                            <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) }}" class="pet-thumb">
+                            {# Szétvágjuk a listát és az első képet vesszük ki borítóképnek #}
+                            {% set photos = pet.photo_path.split(',') %}
+                            <img src="{{ url_for('static', filename='uploads/pet_' ~ pet.id ~ '/' ~ photos[0]) }}" class="pet-thumb">
                         {% else %}
                             <div class="pet-placeholder">
                                 {{ "KUTYA" if pet.type == 'dog' else "MACSKA" if pet.type == 'cat' else "EGYÉB" }}

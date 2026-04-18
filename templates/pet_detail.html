@@ -6,10 +6,43 @@
         <span class="status-badge {{ pet.status.lower() }}">{{ pet.status }}</span>
     </div>
 
-    <div class="detail-main">
-        <div class="detail-image">
-            <img src="{{ url_for('static', filename='uploads/' + pet.photo_path) if pet.photo_path else url_for('static', filename='placeholder.png') }}" alt="{{ pet.name }}">
+    <div class="pet-gallery">
+    {% if pet.photo_path %}
+        {% set photos = pet.photo_path.split(',') %}
+        <div class="slideshow-container">
+            {% for photo in photos %}
+                <div class="mySlides fade">
+                    <img src="{{ url_for('static', filename='uploads/pet_' ~ pet.id ~ '/' ~ photo) }}" style="width:100%">
+                </div>
+            {% endfor %}
+
+            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)">&#10095;</a>
         </div>
+    {% else %}
+        <div class="pet-placeholder">Nincs kép feltöltve</div>
+    {% endif %}
+        </div>
+
+        <script>
+        let slideIndex = 1;
+        showSlides(slideIndex);
+
+        function plusSlides(n) {
+        showSlides(slideIndex += n);
+        }
+
+        function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName("mySlides");
+        if (n > slides.length) {slideIndex = 1}    
+        if (n < 1) {slideIndex = slides.length}
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";  
+        }
+        slides[slideIndex-1].style.display = "block";  
+        }
+        </script>
 
         <div class="detail-info">
             <h3>Alapadatok</h3>

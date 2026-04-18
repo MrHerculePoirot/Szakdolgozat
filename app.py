@@ -144,21 +144,38 @@ def create_app():
             new_pet.chip_id = chip_id
             new_pet.age = request.form.get('age')
             new_pet.age_unit = request.form.get('age_unit')
+            new_pet.gender = request.form.get('gender')
             new_pet.is_neutered = request.form.get('is_neutered') == 'true'
             new_pet.description = request.form.get('description')
             new_pet.user_id = current_user.id
             new_pet.location_id = new_location.id # Kapcsolat az új néven
 
-            # 6. Fotó kezelése
-            file = request.files.get('photo')
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                new_pet.photo_path = filename
+            # 6. Több fotó kezelése és egyedi mappába rendezése
+            files = request.files.getlist('photo')
+            filenames = []
+            
+            if files and files[0].filename != '':
+                # Először elmentjük az állatot, hogy legyen ID-ja
+                db.session.add(new_pet)
+                db.session.flush() # Ez generálja le az ID-t az adatbázisban mentés előtt
 
-            new_pet.gender = request.form.get('gender')
+                # Létrehozzuk a mappát: static/uploads/pet_ID
+                pet_folder_name = f'pet_{new_pet.id}'
+                pet_dir = os.path.join(app.config['UPLOAD_FOLDER'], pet_folder_name)
+                
+                if not os.path.exists(pet_dir):
+                    os.makedirs(pet_dir)
 
-            db.session.add(new_pet)
+                for file in files:
+                    if file.filename != '':
+                        filename = secure_filename(file.filename)
+                        # A képet az új, saját mappájába mentjük
+                        file.save(os.path.join(pet_dir, filename))
+                        filenames.append(filename)
+                
+                # A fájlneveket vesszővel elválasztva mentjük az adatbázisba
+                new_pet.photo_path = ",".join(filenames)
+            
             db.session.commit()
             return redirect(url_for('my_pets'))
         # app.py - Keresd meg a függvény végét:
