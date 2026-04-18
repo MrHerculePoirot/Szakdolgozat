@@ -14,6 +14,19 @@ from models.animal import Animal, Dog, Cat, Other
 # Környezeti változók betöltése
 load_dotenv()
 
+def load_list(filename):
+    with open(filename, 'r', encoding='utf-8') as f:
+        # Csak azokat a sorokat tartjuk meg, amik nem üresek és nem [source...]-szal kezdődnek
+        return [line.strip() for line in f if line.strip() and not line.startswith('[')]
+
+# Listák betöltése a fájlokból
+COLORS = load_list('colors.txt')
+DOG_BREEDS = load_list('dog_breeds.txt')
+CAT_BREEDS = load_list('cat_breeds.txt')
+OTHER_BREEDS = load_list('other_breeds.txt')
+# Ez az összesített lista a szűréshez kell majd
+ALL_BREEDS = sorted(list(set(DOG_BREEDS + CAT_BREEDS + OTHER_BREEDS)))
+
 def create_app():
     app = Flask(__name__)
 
@@ -143,10 +156,18 @@ def create_app():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 new_pet.photo_path = filename
 
+            new_pet.gender = request.form.get('gender')
+
             db.session.add(new_pet)
             db.session.commit()
             return redirect(url_for('my_pets'))
-        return render_template('add_pet.html')
+        # app.py - Keresd meg a függvény végét:
+        return render_template('add_pet.html', 
+                               colors=COLORS, 
+                               dog_breeds=DOG_BREEDS, 
+                               cat_breeds=CAT_BREEDS, 
+                               other_breeds=OTHER_BREEDS)
+        ##return render_template('add_pet.html')
 
     @app.route('/my_pets')
     @login_required
@@ -172,6 +193,7 @@ def create_app():
             pet.age_unit = request.form.get('age_unit')
             pet.is_neutered = request.form.get('is_neutered') == 'true'
             pet.description = request.form.get('description')
+            pet.gender = request.form.get('gender')
 
             # Helyszín frissítése (ha létezik a kapcsolat)
             if pet.location:
@@ -182,7 +204,14 @@ def create_app():
             
             db.session.commit()
             return redirect(url_for('my_pets'))
-        return render_template('edit_pet.html', pet=pet)
+        # app.py - Itt is minden lista kell a módosításhoz:
+        return render_template('edit_pet.html', 
+                            pet=pet, 
+                            colors=COLORS, 
+                            dog_breeds=DOG_BREEDS, 
+                            cat_breeds=CAT_BREEDS, 
+                            other_breeds=OTHER_BREEDS)
+        ##return render_template('edit_pet.html', pet=pet)
     
     ######################xxxx
     @app.route('/pet/<int:pet_id>')
@@ -216,6 +245,12 @@ def create_app():
         pet_type = request.args.get('type')
         if pet_type and pet_type != 'all':
             query = query.filter(Animal.type == pet_type)
+
+
+        # ÚJ: Státusz szűrés (LOST/FOUND/ADOPTION)
+        status_search = request.args.get('status')
+        if status_search and status_search != 'all':
+            query = query.filter(Animal.status == status_search)
 
         # 2. NÉV szűrés (külön mező a HTML-ben)
         name_search = request.args.get('name', '').strip()
@@ -262,54 +297,11 @@ def create_app():
         if not any([pet_type != 'all' and pet_type, name_search, chip_search, loc_search, age_min, age_max]) and len(display_pets) > 50:
             display_pets = random.sample(display_pets, 50)
 
-        return render_template('all_pets.html', pets=display_pets)
-
-
-    """
-    @app.route('/all_pets')
-    def all_pets():
-        # Alaphelyzetben az összes állat lekérése
-        query = Animal.query
-
-        # 1. Típus szűrés - Csak ha nem 'all' és van érték
-        pet_type = request.args.get('type')
-        if pet_type and pet_type != 'all':
-            query = query.filter(Animal.type == pet_type)
-
-        # 2. Név vagy Chip szűrés - Csak ha beírtál valamit
-        search = request.args.get('search', '').strip()
-        if search:
-            query = query.filter(
-                (Animal.name.ilike(f'%{search}%')) | 
-                (Animal.chip_id.ilike(f'%{search}%'))
-            )
-
-        # 3. Helyszín szűrés - Csak ha beírtál várost vagy országot
-        loc_search = request.args.get('location', '').strip()
-        if loc_search:
-            query = query.join(Address).filter(
-                (Address.city.ilike(f'%{loc_search}%')) | 
-                (Address.country.ilike(f'%{loc_search}%'))
-            )
-
-        # 4. Kor szerinti szűrés - Csak ha megadtál számot
-        age_min = request.args.get('age_min')
-        age_max = request.args.get('age_max')
-        
-        if age_min and age_min.strip():
-            query = query.filter(Animal.age >= int(age_min))
-        if age_max and age_max.strip():
-            query = query.filter(Animal.age <= int(age_max))
-
-        # Itt hajtódik végre a lekérdezés a fenti szűrőkkel (vagy szűrők nélkül)
-        display_pets = query.all()
-        
-        # Opcionális: 50-es limit megőrzése a teljes listánál
-        if not any([pet_type != 'all' and pet_type, search, loc_search, age_min, age_max]) and len(display_pets) > 50:
-            display_pets = random.sample(display_pets, 50)
-
-        return render_template('all_pets.html', pets=display_pets)
-    """
+        ##return render_template('all_pets.html', pets=display_pets)
+        return render_template('all_pets.html', 
+                               pets=display_pets, 
+                               colors=COLORS, 
+                               all_breeds=ALL_BREEDS)
     return app
 
 if __name__ == '__main__':

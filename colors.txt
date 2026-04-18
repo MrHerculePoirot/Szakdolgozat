@@ -1,0 +1,11 @@
+fekete
+fehér
+barna
+világosbarna
+bézs
+zsemle
+szürke
+tarka
+foltos
+narancssárga
+egyéb

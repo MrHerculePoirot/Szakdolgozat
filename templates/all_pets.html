@@ -53,6 +53,16 @@
                 </div>
 
                 <div class="filter-group">
+                    <label>Státusz</label>
+                    <select name="status">
+                        <option value="all">Összes</option>
+                        <option value="LOST" {% if request.args.get('status') == 'LOST' %}selected{% endif %}>Elveszett</option>
+                        <option value="FOUND" {% if request.args.get('status') == 'FOUND' %}selected{% endif %}>Talált</option>
+                        <option value="ADOPTION" {% if request.args.get('status') == 'ADOPTION' %}selected{% endif %}>Örökbe fogadható</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
                     <label>Állat neve</label>
                     <input type="text" name="name" placeholder="Név keresése..." value="{{ request.args.get('name', '') }}">
                 </div>
@@ -63,6 +73,16 @@
                         <option value="all">Mindegy</option>
                         <option value="Hím" {% if request.args.get('gender') == 'Hím' %}selected{% endif %}>Hím</option>
                         <option value="Nőstény" {% if request.args.get('gender') == 'Nőstény' %}selected{% endif %}>Nőstény</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Szín</label>
+                    <select name="colour">
+                        <option value="all">Mindegy</option>
+                        {% for color in colors %}
+                            <option value="{{ color }}" {% if request.args.get('colour') == color %}selected{% endif %}>{{ color }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 

@@ -7,9 +7,10 @@
         <input type="text" name="name" value="{{ pet.name or '' }}" placeholder="Állat neve (ha ismert)">
         
         <label>Státusz:</label>
-        <select name="status">
-            <option value="LOST" {% if pet.status == 'LOST' %}selected{% endif %}>Elveszett</option>
-            <option value="FOUND" {% if pet.status == 'FOUND' %}selected{% endif %}>Talált</option>
+        <select name="status" required>
+            <option value="LOST">Elveszett</option>
+            <option value="FOUND">Talált</option>
+            <option value="ADOPTION">Örökbe fogadható</option>
         </select>
 
         <label>Fajta:</label>
@@ -22,9 +23,9 @@
         </select>
         
         <label>Szín:</label>
-        <select name="colour">
-            {% for c in ['fehér','fekete','barna','világosbarna','bézs','zsemle','szürke','tarka','foltos','narancssárga','egyéb'] %}
-                <option value="{{ c }}" {% if pet.colour == c %}selected{% endif %}>{{ c }}</option>
+        <select name="colour" required>
+            {% for color in colors %}
+                <option value="{{ color }}" {% if pet.colour == color %}selected{% endif %}>{{ color }}</option>
             {% endfor %}
         </select>
         
