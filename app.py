@@ -241,10 +241,15 @@ def create_app():
     def all_pets():
         query = Animal.query
 
-        # 1. Típus szűrés
+        # 1. Típus szűrés (ez már megvan)
         pet_type = request.args.get('type')
         if pet_type and pet_type != 'all':
             query = query.filter(Animal.type == pet_type)
+
+        # --- EZ HIÁNYZOTT: Fajta szűrés ---
+        breed_search = request.args.get('breed')
+        if breed_search and breed_search != 'all' and breed_search != '':
+            query = query.filter(Animal.breed == breed_search)
 
 
         # ÚJ: Státusz szűrés (LOST/FOUND/ADOPTION)
@@ -297,11 +302,22 @@ def create_app():
         if not any([pet_type != 'all' and pet_type, name_search, chip_search, loc_search, age_min, age_max]) and len(display_pets) > 50:
             display_pets = random.sample(display_pets, 50)
 
-        ##return render_template('all_pets.html', pets=display_pets)
+
+        # app.py javítás
+        return render_template('all_pets.html', 
+                            pets=display_pets, 
+                            colors=COLORS, 
+                            all_breeds=ALL_BREEDS,
+                            dog_breeds=DOG_BREEDS,  # EZ HIÁNYZOTT
+                            cat_breeds=CAT_BREEDS,  # EZ HIÁNYZOTT
+                            other_breeds=OTHER_BREEDS) # EZ HIÁNYZOTT
+            ##return render_template('all_pets.html', pets=display_pets)
+    """
         return render_template('all_pets.html', 
                                pets=display_pets, 
                                colors=COLORS, 
-                               all_breeds=ALL_BREEDS)
+                               all_breeds=ALL_BREEDS) #other_breeds=OTHER_BREEDS
+        """
     return app
 
 if __name__ == '__main__':

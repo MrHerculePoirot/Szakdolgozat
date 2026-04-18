@@ -21,12 +21,16 @@
         </select>
 
         <input type="text" name="name" placeholder="Állat neve (ha ismert)">
-        <input type="text" name="breed" placeholder="Fajta (pl. Labrador)">
+        
+        <label>Fajta:</label>
+        <select name="breed" id="pet_breed" required>
+            <option value="" disabled selected>Válassz típust előbb!</option>
+        </select>
 
         <label>Neme:</label>
         <select name="gender" required>
-            <option value="Hím" {% if pet and pet.gender == 'Hím' %}selected{% endif %}>Hím</option>
-            <option value="Nőstény" {% if pet and pet.gender == 'Nőstény' %}selected{% endif %}>Nőstény</option>
+            <option value="Hím">Hím</option>
+            <option value="Nőstény">Nőstény</option>
         </select>
         
         <label>Szín:</label>
@@ -37,31 +41,23 @@
             {% endfor %}
         </select>
 
-        <input type="text" 
-               name="chip_id" 
-               placeholder="Chip szám (pontosan 15 számjegy)" 
-               pattern="\d{15}" 
-               title="A chipszámnak pontosan 15 számjegyből kell állnia!"
-               maxlength="15">
+        <input type="text" name="chip_id" placeholder="Chip szám (15 számjegy)" pattern="\d{15}" maxlength="15">
 
         <div class="location-section">
             <h3>Helyszín adatai</h3>
-            <label>Ország (Kötelező):</label>
+            <label>Ország:</label>
             <input type="text" name="country" placeholder="Magyarország" required>
-
-            <label>Város (Kötelező):</label>
+            <label>Város:</label>
             <input type="text" name="city" placeholder="Budapest" required>
-
-            <label>Irányítószám (Opcionális):</label>
+            <label>Irányítószám:</label>
             <input type="text" name="postcode" placeholder="1051">
-
-            <label>Utca (Opcionális):</label>
+            <label>Utca:</label>
             <input type="text" name="street" placeholder="Példa utca 12.">
         </div>
 
         <label>Állat kora:</label>
         <div style="display: flex; gap: 10px;">
-            <input type="number" name="age" placeholder="Mennyi idős?" min="0" style="flex: 2;">
+            <input type="number" name="age" placeholder="Kor" min="0" style="flex: 2;">
             <select name="age_unit" style="flex: 1;">
                 <option value="nap">nap</option>
                 <option value="hét">hét</option>
@@ -76,13 +72,23 @@
             <option value="true">Ivartalanított (igen)</option>
         </select>
         
-        <label>Fotó feltöltése (MI elemzéshez):</label>
+        <label>Fotó feltöltése:</label>
         <input type="file" name="photo" accept="image/*">
 
-        <label>Leírás/Megjegyzés:</label><br>
-        <textarea name="description" placeholder="Minden egyéb fontos információ (pl. viselkedés, különös ismertetőjel...)" rows="4"></textarea>
+        <label>Leírás:</label>
+        <textarea name="description" rows="4"></textarea>
 
         <button type="submit" class="btn-submit">Rögzítés</button>
     </form>
 </div>
+
+<div id="breed-data" 
+     data-dogs='{{ dog_breeds | tojson | safe }}' 
+     data-cats='{{ cat_breeds | tojson | safe }}' 
+     data-others='{{ other_breeds | tojson | safe }}'
+     data-is-filter="false"
+     style="display: none;">
+</div>
+<script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
+
 {% endblock %}

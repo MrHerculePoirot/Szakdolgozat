@@ -43,12 +43,19 @@
             <h3>Szűrés</h3>
             <form method="GET" action="{{ url_for('all_pets') }}" class="filter-form-sidebar">
                 <div class="filter-group">
-                    <label>Típus</label>
-                    <select name="type">
-                        <option value="all">Összes</option>
-                        <option value="dog" {% if request.args.get('type') == 'dog' %}selected{% endif %}>Kutya</option>
-                        <option value="cat" {% if request.args.get('type') == 'cat' %}selected{% endif %}>Macska</option>
-                        <option value="other" {% if request.args.get('type') == 'other' %}selected{% endif %}>Egyéb</option>
+                    <label>Faj</label>
+                    <select name="type" id="filter_type" onchange="updateBreeds()">
+                        <option value="all">Mindegyik</option>
+                        <option value="dog">Kutya</option>
+                        <option value="cat">Macska</option>
+                        <option value="other">Egyéb</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Fajta</label>
+                    <select name="breed" id="filter_breed">
+                        <option value="all">Összes fajta</option>
                     </select>
                 </div>
 
@@ -117,4 +124,15 @@
 
     </div>
 </div>
+
+<div id="breed-data" 
+     data-dogs='{{ dog_breeds | tojson | safe }}' 
+     data-cats='{{ cat_breeds | tojson | safe }}' 
+     data-others='{{ other_breeds | tojson | safe }}'
+     data-current-breed="{{ request.args.get('breed', '') }}"
+     data-is-filter="true"
+     style="display: none;">
+</div>
+<script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
+
 {% endblock %}

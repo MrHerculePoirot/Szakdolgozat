@@ -13,8 +13,24 @@
             <option value="ADOPTION">Örökbe fogadható</option>
         </select>
 
+        <label>Típus:</label>
+        <input type="text" id="pet_type" value="{{ pet.type }}" readonly style="background-color: #f0f0f0; cursor: not_allowed;">
+        <input type="hidden" name="type" value="{{ pet.type }}">
+
         <label>Fajta:</label>
-        <input type="text" name="breed" value="{{ pet.breed or '' }}" placeholder="Fajta (pl. Labrador)">
+        <select name="breed" id="pet_breed" required>
+            </select>
+
+        <div id="breed-data" 
+            data-dogs='{{ dog_breeds | tojson | safe }}' 
+            data-cats='{{ cat_breeds | tojson | safe }}' 
+            data-others='{{ other_breeds | tojson | safe }}'
+            data-current-breed="{{ pet.breed }}"
+            data-is-filter="false"
+            style="display: none;">
+        </div>
+        <script>document.getElementsByName('type')[0].id = 'pet_type';</script>
+        <script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
 
         <label>Neme:</label>
         <select name="gender" required>
