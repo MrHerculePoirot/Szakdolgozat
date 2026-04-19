@@ -151,7 +151,7 @@ def create_app():
             new_pet.location_id = new_location.id # Kapcsolat az új néven
 
             # 6. Több fotó kezelése és egyedi mappába rendezése
-            files = request.files.getlist('photo')
+            files = request.files.getlist('photo')[:4]
             filenames = []
             
             if files and files[0].filename != '':

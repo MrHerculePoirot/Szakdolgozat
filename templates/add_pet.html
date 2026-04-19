@@ -72,8 +72,17 @@
             <option value="true">Ivartalanított (igen)</option>
         </select>
         
-        <label>Fotó feltöltése:</label>
-        <input type="file" name="photo" accept="image/*" multiple>
+        <label>Fotók feltöltése (max. 4 kép):</label>
+        <input type="file" name="photo" id="photo_input" accept="image/*" multiple>
+
+        <script>
+        document.getElementById('photo_input').addEventListener('change', function() {
+            if (this.files.length > 4) {
+                alert("Maximum 4 képet tölthetsz fel!");
+                this.value = "";
+            }
+        });
+        </script>
 
         <label>Leírás:</label>
         <textarea name="description" rows="4"></textarea>
