@@ -21,19 +21,26 @@ function initMap() {
         'ADOPTION': '#0000FF'   // Kék
     };
 
-    // Átméretezett, kisebb koordináták az egységességért
-    const shapes = {
-        cat: google.maps.SymbolPath.CIRCLE,      // Kör
-        dog: 'M -3,-3 L 3,-3 L 3,3 L -3,3 Z',    // Kisebb négyzet
-        other: 'M 0,-4 L -4,4 L 4,4 Z'           // Kisebb háromszög
-    };
-
     pets.forEach((pet, index) => {
         setTimeout(() => {
             geocoder.geocode({ address: pet.full_address }, (results, status) => {
                 if (status === "OK") {
                     const markerColor = statusColors[pet.status] || '#808080';
-                    const markerPath = shapes[pet.type] || shapes.other;
+                    
+                    let markerPath;
+                    let markerScale;
+
+                    // Formák szétválasztása és fixálása
+                    if (pet.type === 'cat') {
+                        markerPath = google.maps.SymbolPath.CIRCLE; // Garantált kör
+                        markerScale = 7; // A körnél ez a sugár pixelben
+                    } else if (pet.type === 'dog') {
+                        markerPath = 'M -5,-5 L 5,-5 L 5,5 L -5,5 Z'; // Négyzet
+                        markerScale = 1; // Az SVG-nél ez a szorzó
+                    } else {
+                        markerPath = 'M 0,-7 L -7,7 L 7,7 Z'; // Háromszög
+                        markerScale = 1;
+                    }
 
                     const marker = new google.maps.Marker({
                         map: map,
@@ -41,7 +48,7 @@ function initMap() {
                         type: pet.type,
                         icon: {
                             path: markerPath,
-                            scale: 2, // Itt az egységes méretezés minden formára
+                            scale: markerScale,
                             fillColor: markerColor,
                             fillOpacity: 1,
                             strokeColor: '#FFFFFF',
@@ -54,6 +61,7 @@ function initMap() {
         }, index * 300);
     });
 
+    // Szűrés logika
     document.getElementById('type-filter').addEventListener('change', function() {
         const selectedType = this.value;
         markers.forEach(marker => {
