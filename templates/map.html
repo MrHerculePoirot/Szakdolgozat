@@ -3,70 +3,14 @@
 {% block title %}Pet Finder - Térkép{% endblock %}
 
 {% block content %}
-
     <h1>Elveszett állatok térképe</h1>
-    <div id="map"></div>
+    <div id="map" style="height: 500px; width: 100%;"></div>
 
-    <script>
-        let marker;
-        function initMap() {
-            const budapest = { lat: 47.4979, lng: 19.0402 };
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 12,
-                center: budapest,
-                mapTypeId: 'roadmap'
-            });
+    <div id="map-data" 
+         data-pets='{{ pets_metadata | tojson | safe }}' 
+         style="display: none;">
+    </div>
 
-            map.addListener("click", (mapsMouseEvent) => {
-                if (marker) {
-                    marker.setMap(null);
-                }
-
-                const position = mapsMouseEvent.latLng;
-                const isFound = confirm("Talált állat? (OK = Talált, Mégse = Elveszett)");
-                const status = isFound ? "FOUND" : "LOST";
-                
-                const markerIcon = isFound 
-                    ? "http://maps.google.com/mapfiles/ms/icons/green-dot.png" 
-                    : "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-
-                marker = new google.maps.Marker({
-                    position: position,
-                    map: map,
-                    icon: markerIcon,
-                    title: status === "FOUND" ? "Találtam egy állatot!" : "Elveszett állat helyszíne"
-                });
-
-                // Küldés a backendnek - Minden adat egy scope-on belül
-                fetch('/add_animal', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: "Teszt Állat",
-                        type: "dog",
-                        breed: "Keverék",
-                        status: status,
-                        latitude: position.lat(),
-                        longitude: position.lng()
-                    })
-                })
-                .then(response => {
-                    if (response.ok) return response.json();
-                    throw new Error('Hiba a mentésnél');
-                })
-                .then(data => {
-                    console.log("Sikeres mentés:", data);
-                    alert("Állat rögzítve az adatbázisba! Pozíció: " + position.lat().toFixed(4) + ", " + position.lng().toFixed(4));
-                })
-                .catch(err => {
-                    console.error("Hiba:", err);
-                    alert("Hiba történt a mentés során. Be vagy jelentkezve?");
-                });
-            });
-
-            console.log("A térkép sikeresen inicializálva.");
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/map_handler.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap" async defer></script>
-
 {% endblock %}

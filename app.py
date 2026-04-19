@@ -63,8 +63,29 @@ def create_app():
     @app.route('/')
     def index():
         api_key = os.getenv('GOOGLE_MAPS_API_KEY')
-        animals = Animal.query.all()
-        return render_template('map.html', api_key=api_key, animals=animals)
+        all_pets = Animal.query.all()
+        pets_metadata = []
+        
+        for pet in all_pets:
+            # Csak akkor adjuk hozzá, ha van helyszín (Address) megadva
+            if pet.location:
+                # Borítókép kiválasztása a mappából
+                photo_url = ""
+                if pet.photo_path:
+                    first_img = pet.photo_path.split(',')[0]
+                    photo_url = url_for('static', filename=f'uploads/pet_{pet.id}/{first_img}')
+                
+                pets_metadata.append({
+                    "id": pet.id,
+                    "name": pet.name or "Névtelen",
+                    "city": pet.location.city,
+                    "street": pet.location.street or "",
+                    "status": pet.status,
+                    "photo": photo_url
+                })
+        
+        # FIGYELEM: Itt a pets_metadata-t adjuk át, nem az animals-t!
+        return render_template('map.html', api_key=api_key, pets_metadata=pets_metadata)
     
     @app.route('/register', methods=['GET', 'POST'])
     def register():
