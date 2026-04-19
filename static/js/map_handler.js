@@ -14,8 +14,8 @@ function initMap() {
         disableDefaultUI: true,
         zoomControl: true
     });
-    const geocoder = new google.maps.Geocoder();
 
+    const geocoder = new google.maps.Geocoder();
     const statusColors = { 'LOST': '#FF0000', 'FOUND': '#008000', 'ADOPTION': '#0000FF' };
 
     pets.forEach((pet, index) => {
@@ -36,8 +36,18 @@ function initMap() {
                         markerScale = 1;
                     }
 
+                    // Vizuális eltolás (Jitter) hozzáadása
+                    // Ez pár méterrel eltolja a markereket, így látszani fognak egymás mellett
+                    const position = results[0].geometry.location;
+                    const jitterLat = (Math.random() - 0.5) * 0.00015; // Kb. 10-15 méter eltolás
+                    const jitterLng = (Math.random() - 0.5) * 0.00015;
+
                     const marker = new google.maps.Marker({
-                        position: results[0].geometry.location,
+                        position: {
+                            lat: position.lat() + jitterLat,
+                            lng: position.lng() + jitterLng
+                        },
+                        map: map,
                         type: pet.type,
                         icon: {
                             path: markerPath,
@@ -48,30 +58,23 @@ function initMap() {
                             strokeWeight: 1
                         }
                     });
+
                     markers.push(marker);
 
                     if (markers.length === pets.length) {
                         markerCluster = new markerClusterer.MarkerClusterer({ 
                             map, 
                             markers,
-                            // map_handler.js - A klaszter renderer részének frissítése a kép alapján
                             renderer: {
                                 render: ({ count, position }) => {
                                     return new google.maps.Marker({
                                         position,
-                                        label: { 
-                                            text: String(count), 
-                                            color: "white", // Fehér szín, hogy látsszon a vastag szürke alapon
-                                            fontSize: "14px", 
-                                            fontWeight: "bold" 
-                                        },
+                                        label: { text: String(count), color: "white", fontSize: "14px", fontWeight: "bold" },
                                         icon: {
-                                            // Rövidebb, de nagyon vaskos szárak
                                             path: 'M -10,0 L 10,0 M 0,-10 L 0,10',
                                             strokeColor: "#808080",
-                                            strokeWeight: 12, // EZ TESZI ILYEN VASTAGGÁ
+                                            strokeWeight: 12,
                                             scale: 1,
-                                            // A szám pontosan a metszéspontban
                                             labelOrigin: new google.maps.Point(0, 0)
                                         },
                                         zIndex: Number(google.maps.Marker.MAX_ZINDEX) + 1,
@@ -87,13 +90,14 @@ function initMap() {
 
     document.getElementById('type-filter').addEventListener('change', function() {
         const selectedType = this.value;
-        const filteredMarkers = markers.filter(marker => {
-            return selectedType === 'all' || marker.type === selectedType;
+        markers.forEach(marker => {
+            const isVisible = selectedType === 'all' || marker.type === selectedType;
+            marker.setMap(isVisible ? map : null);
         });
 
         if (markerCluster) {
             markerCluster.clearMarkers();
-            markerCluster.addMarkers(filteredMarkers);
+            markerCluster.addMarkers(markers.filter(m => m.getMap() !== null));
         }
     });
 }

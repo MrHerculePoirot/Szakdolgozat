@@ -14,7 +14,9 @@ class Animal(db.Model):
     chip_id = db.Column(db.String(50))
 
     # Ezt ide tesszük, hogy minden alosztály használhassa anélkül, hogy ütközne
-    breed = db.Column(db.String(100)) 
+    breed = db.Column(db.String(100))
+
+    last_seen_date = db.Column(db.Date, nullable=True) # Új mező az utolsó észleléshez
     
     is_neutered = db.Column(db.Boolean, default=False)
     type = db.Column(db.String(50))

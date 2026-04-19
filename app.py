@@ -1,7 +1,9 @@
 import os
 import random
+from flask_migrate import Migrate, upgrade
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from dotenv import load_dotenv
+from datetime import datetime
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -45,6 +47,14 @@ def create_app():
 
     # Adatbázis inicializálása
     init_app(app)
+    migrate = Migrate(app, db)
+
+
+    with app.app_context():
+        # Ez a sor automatikusan frissíti az adatbázist indításkor
+        if os.path.exists('migrations'):
+            upgrade()
+        print("Adatbázis sémák ellenőrizve és frissítve!")
 
     login_manager = LoginManager()
     login_manager.login_view = 'login'
@@ -144,6 +154,15 @@ def create_app():
 
             # 4. Állat példányosítása típus alapján
             pet_type = request.form.get('type')
+            ##############xx
+            last_seen_str = request.form.get('last_seen_date')
+            last_seen_dt = None
+            if request.form.get('status') == 'LOST' and last_seen_str:
+                try:
+                    last_seen_dt = datetime.strptime(last_seen_str, '%Y-%m-%d').date()
+                except ValueError:
+                    last_seen_dt = None
+            ###########xxx
             if pet_type == 'dog':
                 new_pet = Dog(breed=request.form.get('breed'))
             elif pet_type == 'cat':
@@ -163,6 +182,7 @@ def create_app():
             new_pet.description = request.form.get('description')
             new_pet.user_id = current_user.id
             new_pet.location_id = new_location.id # Kapcsolat az új néven
+            new_pet.last_seen_date = last_seen_dt  # Adatbázisba írjuk
 
             # 6. Több fotó kezelése és egyedi mappába rendezése
             files = request.files.getlist('photo')[:4]

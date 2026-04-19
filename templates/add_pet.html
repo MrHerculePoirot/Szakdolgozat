@@ -78,6 +78,34 @@
         <script src="{{ url_for('static', filename='js/photo_validator.js') }}"></script>
         <script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
 
+        <div id="last_seen_container" style="display: none; margin-bottom: 15px;">
+            <label>Mikor látták utoljára? (Kötelező):</label>
+            <input type="date" name="last_seen_date" id="last_seen_date">
+        </div>
+
+        <script>
+// add_pet.html: Cseréld le a meglévő <script> részt erre:
+function updateLastSeenVisibility() {
+    const statusSelect = document.querySelector('select[name="status"]');
+    const container = document.getElementById('last_seen_container');
+    const input = document.getElementById('last_seen_date');
+    
+    if (statusSelect.value === 'LOST') {
+        container.style.display = 'block';
+        input.required = true;
+    } else {
+        container.style.display = 'none';
+        input.required = false;
+    }
+}
+
+// Figyeljük a változtatást
+document.querySelector('select[name="status"]').addEventListener('change', updateLastSeenVisibility);
+
+// Oldal betöltésekor is futtassuk le egyszer
+window.addEventListener('DOMContentLoaded', updateLastSeenVisibility);
+        </script>
+
         <label>Leírás:</label>
         <textarea name="description" rows="4"></textarea>
 

@@ -42,6 +42,10 @@
             <p><strong>Ivartalanított:</strong> {{ 'Igen' if pet.is_neutered else 'Nem' }}</p>
             <p><strong>Chip szám:</strong> {{ pet.chip_id or 'Nincs megadva' }}</p>
 
+            {% if pet.status == 'LOST' and pet.last_seen_date %}
+            <p><strong>Utoljára látva:</strong> <span style="color: #d9534f; font-weight: bold;">{{ pet.last_seen_date.strftime('%Y-%m-%d') }}</span></p>
+            {% endif %}
+
             <h3>Helyszín</h3>
             <p>
                 {% if pet.location %}
