@@ -75,14 +75,8 @@
         <label>Fotók feltöltése (max. 4 kép):</label>
         <input type="file" name="photo" id="photo_input" accept="image/*" multiple>
 
-        <script>
-        document.getElementById('photo_input').addEventListener('change', function() {
-            if (this.files.length > 4) {
-                alert("Maximum 4 képet tölthetsz fel!");
-                this.value = "";
-            }
-        });
-        </script>
+        <script src="{{ url_for('static', filename='js/photo_validator.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
 
         <label>Leírás:</label>
         <textarea name="description" rows="4"></textarea>
