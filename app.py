@@ -66,14 +66,15 @@ def create_app():
         all_pets = Animal.query.all()
         pets_metadata = []
         
+        # app.py - Az index útvonalon belül módosítsd a ciklust:
         for pet in all_pets:
             if pet.location:
-                # Összefűzzük a teljes címet a pontosabb kereséshez
                 loc = pet.location
                 full_addr = f"{loc.postcode} {loc.city}, {loc.street}, {loc.country}"
                 
                 pets_metadata.append({
-                    "full_address": full_addr
+                    "full_address": full_addr,
+                    "type": pet.type  # EZT ADJUK HOZZÁ
                 })
         
         # Itt a pets_metadata-t KELL átadni, amit az imént töltöttél fel adatokkal!
