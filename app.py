@@ -80,12 +80,19 @@ def create_app():
             if pet.location:
                 loc = pet.location
                 full_addr = f"{loc.postcode} {loc.city}, {loc.street}, {loc.country}"
+                owner_phone = "Nincs megadva"
+                if pet.owner and pet.owner.phone:
+                    owner_phone = pet.owner.phone
                 
                 pets_metadata.append({
-                    "full_address": full_addr,
-                    "type": pet.type,
-                    "status": pet.status
-                })
+                    'id': pet.id,
+                    'name': pet.name or "Névtelen állat",
+                    'status': pet.status,
+                    'full_address': f"{pet.location.city}, {pet.location.street}",
+                    'type': pet.type,
+                    'photo_path': pet.photo_path, # ÚJ: Kell a kártyához
+                    'owner_phone': owner_phone    # ÚJ: Kell a kártyához
+                 })
         
         # Itt a pets_metadata-t KELL átadni, amit az imént töltöttél fel adatokkal!
         return render_template('map.html', api_key=api_key, pets_metadata=pets_metadata)

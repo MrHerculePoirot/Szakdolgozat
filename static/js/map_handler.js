@@ -8,12 +8,16 @@ function initMap() {
 
     const pets = JSON.parse(dataContainer.dataset.pets);
     const budapest = { lat: 47.4979, lng: 19.0402 };
+    
     const map = new google.maps.Map(mapElement, { 
         zoom: 8, 
         center: budapest,
         disableDefaultUI: true,
         zoomControl: true
     });
+
+    // --- ÚJ: Egyetlen közös InfoWindow példány ---
+    const infoWindow = new google.maps.InfoWindow();
 
     const geocoder = new google.maps.Geocoder();
     const statusColors = { 'LOST': '#FF0000', 'FOUND': '#008000', 'ADOPTION': '#0000FF' };
@@ -22,6 +26,10 @@ function initMap() {
         setTimeout(() => {
             geocoder.geocode({ address: pet.full_address }, (results, status) => {
                 if (status === "OK") {
+                    const position = results[0].geometry.location;
+                    const jitterLat = (Math.random() - 0.5) * 0.005;
+                    const jitterLng = (Math.random() - 0.5) * 0.005;
+
                     const markerColor = statusColors[pet.status] || '#808080';
                     let markerPath, markerScale;
 
@@ -32,38 +40,55 @@ function initMap() {
                         markerPath = 'M -5,-5 L 5,-5 L 5,5 L -5,5 Z';
                         markerScale = 1;
                     } else {
-                        markerPath = 'M 0,-7 L -7,7 L 7,7 Z';
+                        markerPath = 'M 0,-5 L 5,5 L -5,5 Z';
                         markerScale = 1;
                     }
 
-                    // Vizuális eltolás (Jitter) hozzáadása
-                    // Ez pár méterrel eltolja a markereket, így látszani fognak egymás mellett
-                    const position = results[0].geometry.location;
-                    const jitterLat = (Math.random() - 0.5) * 0.00015; // Kb. 10-15 méter eltolás
-                    const jitterLng = (Math.random() - 0.5) * 0.00015;
-
                     const marker = new google.maps.Marker({
-                        position: {
-                            lat: position.lat() + jitterLat,
-                            lng: position.lng() + jitterLng
-                        },
+                        position: { lat: position.lat() + jitterLat, lng: position.lng() + jitterLng },
                         map: map,
                         type: pet.type,
                         icon: {
                             path: markerPath,
-                            scale: markerScale,
                             fillColor: markerColor,
                             fillOpacity: 1,
+                            strokeWeight: 2,
                             strokeColor: '#FFFFFF',
-                            strokeWeight: 1
-                        }
+                            scale: markerScale,
+                        },
+                        title: pet.name
+                    });
+
+                    // --- ÚJ: Kártya (InfoWindow) tartalmának összeállítása ---
+                    const firstPhoto = pet.photo_path ? pet.photo_path.split(',')[0] : null;
+                    const photoUrl = firstPhoto 
+                        ? `/static/uploads/pet_${pet.id}/${firstPhoto}` 
+                        : '/static/images/default_pet.png';
+
+                    const contentString = `
+                        <div onclick="window.location.href='/pet/${pet.id}'" style="cursor:pointer; width:180px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 5px;">
+                            <img src="${photoUrl}" style="width:100%; height:110px; object-fit:cover; border-radius:6px; margin-bottom:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h4 style="margin:0 0 5px 0; font-size:15px; color:#333;">${pet.name}</h4>
+                            <p style="margin:0; font-size:13px; color:#666;">
+                                <i class="fas fa-phone"></i> <strong>Tel:</strong> ${pet.owner_phone}
+                            </p>
+                            <div style="margin-top:8px; font-size:12px; color:#007bff; font-weight:bold; border-top: 1px solid #eee; padding-top: 5px;">
+                                Részletek megtekintése →
+                            </div>
+                        </div>
+                    `;
+
+                    // --- ÚJ: Kattintás esemény hozzárendelése ---
+                    marker.addListener("click", () => {
+                        infoWindow.setContent(contentString);
+                        infoWindow.open(map, marker);
                     });
 
                     markers.push(marker);
 
-                    if (markers.length === pets.length) {
-                        markerCluster = new markerClusterer.MarkerClusterer({ 
-                            map, 
+                    if (index === pets.length - 1) {
+                        markerCluster = new markerClusterer.MarkerClusterer({
+                            map,
                             markers,
                             renderer: {
                                 render: ({ count, position }) => {
@@ -88,6 +113,7 @@ function initMap() {
         }, index * 300);
     });
 
+    // Szűrő eseménykezelője változatlan
     document.getElementById('type-filter').addEventListener('change', function() {
         const selectedType = this.value;
         markers.forEach(marker => {
