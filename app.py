@@ -67,24 +67,16 @@ def create_app():
         pets_metadata = []
         
         for pet in all_pets:
-            # Csak akkor adjuk hozzá, ha van helyszín (Address) megadva
             if pet.location:
-                # Borítókép kiválasztása a mappából
-                photo_url = ""
-                if pet.photo_path:
-                    first_img = pet.photo_path.split(',')[0]
-                    photo_url = url_for('static', filename=f'uploads/pet_{pet.id}/{first_img}')
+                # Összefűzzük a teljes címet a pontosabb kereséshez
+                loc = pet.location
+                full_addr = f"{loc.postcode} {loc.city}, {loc.street}, {loc.country}"
                 
                 pets_metadata.append({
-                    "id": pet.id,
-                    "name": pet.name or "Névtelen",
-                    "city": pet.location.city,
-                    "street": pet.location.street or "",
-                    "status": pet.status,
-                    "photo": photo_url
+                    "full_address": full_addr
                 })
         
-        # FIGYELEM: Itt a pets_metadata-t adjuk át, nem az animals-t!
+        # Itt a pets_metadata-t KELL átadni, amit az imént töltöttél fel adatokkal!
         return render_template('map.html', api_key=api_key, pets_metadata=pets_metadata)
     
     @app.route('/register', methods=['GET', 'POST'])
