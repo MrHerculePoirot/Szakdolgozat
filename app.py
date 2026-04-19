@@ -66,7 +66,6 @@ def create_app():
         all_pets = Animal.query.all()
         pets_metadata = []
         
-        # app.py - Az index útvonalon belül módosítsd a ciklust:
         for pet in all_pets:
             if pet.location:
                 loc = pet.location
@@ -74,7 +73,8 @@ def create_app():
                 
                 pets_metadata.append({
                     "full_address": full_addr,
-                    "type": pet.type  # EZT ADJUK HOZZÁ
+                    "type": pet.type,
+                    "status": pet.status
                 })
         
         # Itt a pets_metadata-t KELL átadni, amit az imént töltöttél fel adatokkal!
