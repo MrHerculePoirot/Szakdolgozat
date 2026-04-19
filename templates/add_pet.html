@@ -83,27 +83,13 @@
             <input type="date" name="last_seen_date" id="last_seen_date">
         </div>
 
+        <script src="{{ url_for('static', filename='js/status_date_handler.js') }}"></script>
         <script>
-// add_pet.html: Cseréld le a meglévő <script> részt erre:
-function updateLastSeenVisibility() {
-    const statusSelect = document.querySelector('select[name="status"]');
-    const container = document.getElementById('last_seen_container');
-    const input = document.getElementById('last_seen_date');
-    
-    if (statusSelect.value === 'LOST') {
-        container.style.display = 'block';
-        input.required = true;
-    } else {
-        container.style.display = 'none';
-        input.required = false;
-    }
-}
-
-// Figyeljük a változtatást
-document.querySelector('select[name="status"]').addEventListener('change', updateLastSeenVisibility);
-
-// Oldal betöltésekor is futtassuk le egyszer
-window.addEventListener('DOMContentLoaded', updateLastSeenVisibility);
+            // A státusz választó name alapján keressük meg, mert nincs fix ID-ja az eredetiben
+            const addPetStatus = document.querySelector('select[name="status"]');
+            if (addPetStatus) addPetStatus.id = 'pet_status_add';
+            
+            initStatusDateHandler('pet_status_add', 'last_seen_container', 'last_seen_date');
         </script>
 
         <label>Leírás:</label>

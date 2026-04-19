@@ -299,38 +299,32 @@ def create_app():
     def all_pets():
         query = Animal.query
 
-        # 1. Típus szűrés (ez már megvan)
+        # 1. Típus, Fajta, Státusz szűrések
         pet_type = request.args.get('type')
         if pet_type and pet_type != 'all':
             query = query.filter(Animal.type == pet_type)
 
-        # --- EZ HIÁNYZOTT: Fajta szűrés ---
         breed_search = request.args.get('breed')
         if breed_search and breed_search != 'all' and breed_search != '':
             query = query.filter(Animal.breed == breed_search)
 
-
-        # ÚJ: Státusz szűrés (LOST/FOUND/ADOPTION)
         status_search = request.args.get('status')
         if status_search and status_search != 'all':
             query = query.filter(Animal.status == status_search)
 
-        # 2. NÉV szűrés (külön mező a HTML-ben)
+        # 2. Név, Nem, Chipszám, Helyszín szűrések
         name_search = request.args.get('name', '').strip()
         if name_search:
             query = query.filter(Animal.name.ilike(f'%{name_search}%'))
 
-        #######
         gender_search = request.args.get('gender')
         if gender_search and gender_search != 'all':
             query = query.filter(Animal.gender == gender_search)
 
-        # 3. CHIPSZÁM szűrés (külön mező a HTML-ben)
         chip_search = request.args.get('chip_id', '').strip()
         if chip_search:
             query = query.filter(Animal.chip_id == chip_search)
 
-        # 4. Helyszín szűrés
         loc_search = request.args.get('location', '').strip()
         if loc_search:
             query = query.join(Address).filter(
@@ -338,44 +332,58 @@ def create_app():
                 (Address.country.ilike(f'%{loc_search}%'))
             )
 
-        # 5. Kor és MÉRTÉKEGYSÉG szűrés
-            # Kor szűrése az app.py-ban
+        # 3. Kor szűrése
         age_min = request.args.get('age_min')
         age_max = request.args.get('age_max')
         age_unit = request.args.get('age_unit')
 
-        # Csak akkor szűrünk az egységre, ha van megadva számérték (min vagy max)
         if (age_min and age_min.strip()) or (age_max and age_max.strip()):
             if age_min and age_min.strip():
                 query = query.filter(Animal.age >= int(age_min))
             if age_max and age_max.strip():
                 query = query.filter(Animal.age <= int(age_max))
-            # Mivel van számérték, ekkor már kötelezően szűrünk a kiválasztott egységre is
             if age_unit:
                 query = query.filter(Animal.age_unit == age_unit)
 
+        # --- JAVÍTÁS: A dátumszűrést IDE tettem (a query.all() ELÉ) ---
+        date_from = request.args.get('date_from')
+        date_to = request.args.get('date_to')
+
+        if date_from:
+            try:
+                dt_from = datetime.strptime(date_from, '%Y-%m-%d').date()
+                query = query.filter(Animal.last_seen_date >= dt_from)
+            except ValueError:
+                pass
+
+        if date_to:
+            try:
+                dt_to = datetime.strptime(date_to, '%Y-%m-%d').date()
+                query = query.filter(Animal.last_seen_date <= dt_to)
+            except ValueError:
+                pass
+
+        # 4. Lekérdezés végrehajtása és véletlenszerűsítés (ha nincs szűrő)
         display_pets = query.all()
         
-        # Limit csak ha nincs szűrés
-        if not any([pet_type != 'all' and pet_type, name_search, chip_search, loc_search, age_min, age_max]) and len(display_pets) > 50:
+        has_active_filters = any([
+            pet_type and pet_type != 'all', 
+            name_search, chip_search, loc_search, 
+            age_min, age_max, date_from, date_to,
+            status_search and status_search != 'all'
+        ])
+
+        if not has_active_filters and len(display_pets) > 50:
             display_pets = random.sample(display_pets, 50)
 
-
-        # app.py javítás
         return render_template('all_pets.html', 
                             pets=display_pets, 
                             colors=COLORS, 
                             all_breeds=ALL_BREEDS,
-                            dog_breeds=DOG_BREEDS,  # EZ HIÁNYZOTT
-                            cat_breeds=CAT_BREEDS,  # EZ HIÁNYZOTT
-                            other_breeds=OTHER_BREEDS) # EZ HIÁNYZOTT
-            ##return render_template('all_pets.html', pets=display_pets)
-    """
-        return render_template('all_pets.html', 
-                               pets=display_pets, 
-                               colors=COLORS, 
-                               all_breeds=ALL_BREEDS) #other_breeds=OTHER_BREEDS
-        """
+                            dog_breeds=DOG_BREEDS,
+                            cat_breeds=CAT_BREEDS,
+                            other_breeds=OTHER_BREEDS)
+        
     return app
 
 if __name__ == '__main__':
