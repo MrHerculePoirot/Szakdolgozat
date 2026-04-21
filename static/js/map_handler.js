@@ -1,9 +1,27 @@
 let markers = []; 
 let markerCluster; 
+let graticuleLines = []; 
 
-// JAVÍTOTT: Stabil koordináta-rács (vízszintes és függőleges csíkok)
+/**
+ * Dinamikus koordináta-rács rajzolása (Vízszintes és Függőleges)
+ */
 function drawGraticule(map) {
-    const step = 0.5; // 5 fokonkénti rács
+    graticuleLines.forEach(line => line.setMap(null));
+    graticuleLines = [];
+
+    const zoom = map.getZoom();
+    const bounds = map.getBounds();
+    if (!bounds) return;
+
+    let step;
+    if (zoom <= 3) step = 20;
+    else if (zoom <= 5) step = 10;
+    else if (zoom <= 7) step = 5;
+    else if (zoom <= 9) step = 1;
+    else if (zoom <= 11) step = 0.2;
+    else if (zoom <= 13) step = 0.05;
+    else step = 0.01;
+
     const lineOptions = {
         geodesic: false,
         strokeColor: "#444444", 
@@ -13,25 +31,34 @@ function drawGraticule(map) {
         clickable: false
     };
 
-    // 1. VÍZSZINTES CSÍKOK (Szélességi körök) - Szakaszos rajzolás a stabilitásért
-    for (let lat = -80; lat <= 80; lat += step) {
-        const path = [];
-        // 10 fokonként rakunk le egy pontot a vonal mentén, hogy ne tűnjön el
-        for (let lng = -180; lng <= 180; lng += 10) {
-            path.push({lat: lat, lng: lng});
-        }
-        new google.maps.Polyline({
-            ...lineOptions,
-            path: path
-        });
+    const ne = bounds.getNorthEast();
+    const sw = bounds.getSouthWest();
+
+    // Számított határok a rácshoz
+    const latStart = Math.floor(sw.lat() / step) * step;
+    const latEnd = Math.ceil(ne.lat() / step) * step;
+    const lngStart = Math.floor(sw.lng() / step) * step;
+    const lngEnd = Math.ceil(ne.lng() / step) * step;
+
+    // 1. VÍZSZINTES CSÍKOK (Szélességi körök) - Stabilizált szakaszokkal
+    for (let lat = latStart; lat <= latEnd; lat += step) {
+        const path = [
+            {lat: lat, lng: -180}, 
+            {lat: lat, lng: 0}, 
+            {lat: lat, lng: 180}
+        ];
+        const line = new google.maps.Polyline({...lineOptions, path: path});
+        graticuleLines.push(line);
     }
 
     // 2. FÜGGŐLEGES CSÍKOK (Hosszúsági körök)
-    for (let lng = -180; lng <= 180; lng += step) {
-        new google.maps.Polyline({
-            ...lineOptions,
-            path: [{lat: -85, lng: lng}, {lat: 85, lng: lng}]
-        });
+    for (let lng = lngStart; lng <= lngEnd; lng += step) {
+        const path = [
+            {lat: -85, lng: lng}, 
+            {lat: 85, lng: lng}
+        ];
+        const line = new google.maps.Polyline({...lineOptions, path: path});
+        graticuleLines.push(line);
     }
 }
 
@@ -50,8 +77,8 @@ function initMap() {
         zoomControl: true
     });
 
-    // RÁCS AKTIVÁLÁSA
-    drawGraticule(map);
+    // Rács frissítése minden mozgás után
+    map.addListener('idle', () => drawGraticule(map));
 
     const infoWindow = new google.maps.InfoWindow();
     const geocoder = new google.maps.Geocoder();
@@ -99,12 +126,10 @@ function initMap() {
                         : '/static/images/default_pet.png';
 
                     const contentString = `
-                        <div onclick="window.location.href='/pet/${pet.id}'" style="cursor:pointer; width:180px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 5px;">
-                            <img src="${photoUrl}" style="width:100%; height:110px; object-fit:cover; border-radius:6px; margin-bottom:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <h4 style="margin:0 0 5px 0; font-size:15px; color:#333;">${pet.name}</h4>
-                            <p style="margin:0; font-size:13px; color:#666;">
-                                <i class="fas fa-phone"></i> <strong>Tel:</strong> ${pet.owner_phone}
-                            </p>
+                        <div onclick="window.location.href='/pet/${pet.id}'" style="cursor:pointer; width:180px; font-family: sans-serif; padding: 5px;">
+                            <img src="${photoUrl}" style="width:100%; height:110px; object-fit:cover; border-radius:6px; margin-bottom:8px;">
+                            <h4 style="margin:0 0 5px 0; font-size:15px;">${pet.name || 'Névtelen'}</h4>
+                            <p style="margin:0; font-size:13px; color:#666;">Tel: ${pet.owner_phone || 'Nincs megadva'}</p>
                         </div>
                     `;
 
