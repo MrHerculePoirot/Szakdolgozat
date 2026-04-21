@@ -1,6 +1,40 @@
 let markers = []; 
 let markerCluster; 
 
+// JAVÍTOTT: Stabil koordináta-rács (vízszintes és függőleges csíkok)
+function drawGraticule(map) {
+    const step = 0.5; // 5 fokonkénti rács
+    const lineOptions = {
+        geodesic: false,
+        strokeColor: "#444444", 
+        strokeOpacity: 0.25,    
+        strokeWeight: 1,
+        map: map,
+        clickable: false
+    };
+
+    // 1. VÍZSZINTES CSÍKOK (Szélességi körök) - Szakaszos rajzolás a stabilitásért
+    for (let lat = -80; lat <= 80; lat += step) {
+        const path = [];
+        // 10 fokonként rakunk le egy pontot a vonal mentén, hogy ne tűnjön el
+        for (let lng = -180; lng <= 180; lng += 10) {
+            path.push({lat: lat, lng: lng});
+        }
+        new google.maps.Polyline({
+            ...lineOptions,
+            path: path
+        });
+    }
+
+    // 2. FÜGGŐLEGES CSÍKOK (Hosszúsági körök)
+    for (let lng = -180; lng <= 180; lng += step) {
+        new google.maps.Polyline({
+            ...lineOptions,
+            path: [{lat: -85, lng: lng}, {lat: 85, lng: lng}]
+        });
+    }
+}
+
 function initMap() {
     const mapElement = document.getElementById("map");
     const dataContainer = document.getElementById("map-data");
@@ -16,9 +50,10 @@ function initMap() {
         zoomControl: true
     });
 
-    // --- ÚJ: Egyetlen közös InfoWindow példány ---
-    const infoWindow = new google.maps.InfoWindow();
+    // RÁCS AKTIVÁLÁSA
+    drawGraticule(map);
 
+    const infoWindow = new google.maps.InfoWindow();
     const geocoder = new google.maps.Geocoder();
     const statusColors = { 'LOST': '#FF0000', 'FOUND': '#008000', 'ADOPTION': '#0000FF' };
 
@@ -47,7 +82,6 @@ function initMap() {
                     const marker = new google.maps.Marker({
                         position: { lat: position.lat() + jitterLat, lng: position.lng() + jitterLng },
                         map: map,
-                        type: pet.type,
                         icon: {
                             path: markerPath,
                             fillColor: markerColor,
@@ -59,7 +93,6 @@ function initMap() {
                         title: pet.name
                     });
 
-                    // --- ÚJ: Kártya (InfoWindow) tartalmának összeállítása ---
                     const firstPhoto = pet.photo_path ? pet.photo_path.split(',')[0] : null;
                     const photoUrl = firstPhoto 
                         ? `/static/uploads/pet_${pet.id}/${firstPhoto}` 
@@ -72,13 +105,9 @@ function initMap() {
                             <p style="margin:0; font-size:13px; color:#666;">
                                 <i class="fas fa-phone"></i> <strong>Tel:</strong> ${pet.owner_phone}
                             </p>
-                            <div style="margin-top:8px; font-size:12px; color:#007bff; font-weight:bold; border-top: 1px solid #eee; padding-top: 5px;">
-                                Részletek megtekintése →
-                            </div>
                         </div>
                     `;
 
-                    // --- ÚJ: Kattintás esemény hozzárendelése ---
                     marker.addListener("click", () => {
                         infoWindow.setContent(contentString);
                         infoWindow.open(map, marker);
@@ -113,7 +142,6 @@ function initMap() {
         }, index * 300);
     });
 
-    // Szűrő eseménykezelője változatlan
     document.getElementById('type-filter').addEventListener('change', function() {
         const selectedType = this.value;
         markers.forEach(marker => {
