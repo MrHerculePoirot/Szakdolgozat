@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2><i class="fas fa-microscope"></i> AI Vizsgálat: {{ pet.name or 'Névtelen' }}</h2>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-5">
+            {% set photos = pet.photo_path.split(',') if pet.photo_path else [] %}
+            <img src="{{ url_for('static', filename='uploads/pet_' ~ pet.id ~ '/' ~ photos[0]) if photos else url_for('static', filename='images/default_pet.png') }}" 
+                 class="img-fluid rounded shadow-sm" alt="Vizsgált állat">
+        </div>
+
+        <div class="col-md-7">
+            <div class="card border-info mb-3">
+                <div class="card-header bg-info text-white">AI Predikciók</div>
+                <div class="card-body">
+                    <p class="card-text" id="ai-status">
+                        <i class="fas fa-spinner fa-spin"></i> A vizsgálat előkészítése folyamatban...
+                    </p>
+                    </div>
+            </div>
+
+            <div class="card border-secondary mt-4">
+                <div class="card-header">Lehetséges egyezések az adatbázisban</div>
+                <div class="card-body">
+                    <p class="text-muted italic">A párosítás az adatok beolvasása után kezdődik.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

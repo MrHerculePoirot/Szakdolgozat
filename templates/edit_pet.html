@@ -20,13 +20,22 @@
         </div>
         {% endif %}
 
-        <label>Típus:</label>
-        <input type="text" id="pet_type" value="{{ pet.type }}" readonly style="background-color: #f0f0f0; cursor: not_allowed;">
+        <label>Faj:</label>
+        <input type="text" 
+            value="{{ 'Macska' if pet.type == 'cat' else 'Kutya' if pet.type == 'dog' else 'Egyéb' }}" 
+            readonly 
+            style="background-color: #e9ecef; cursor: not_allowed; font-weight: bold; color: #495057;">
         <input type="hidden" name="type" value="{{ pet.type }}">
 
-        <label>Fajta:</label>
-        <select name="breed" id="pet_breed" required>
-            </select>
+<label>Fajta:</label>
+<select name="breed">
+    <option value="">-- Válassz fajtát (vagy hagyd üresen) --</option>
+    {% for breed in breeds %}
+        <option value="{{ breed }}" {% if pet.breed == breed %}selected{% endif %}>
+            {{ breed }}
+        </option>
+    {% endfor %}
+</select>
 
         <div id="breed-data" 
             data-dogs='{{ dog_breeds | tojson | safe }}' 

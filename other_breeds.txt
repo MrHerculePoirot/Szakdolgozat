@@ -3,3 +3,4 @@ hörcsög
 tengerimalac
 teknős
 nyúl
+egyéb

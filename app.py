@@ -262,13 +262,22 @@ def create_app():
             
             db.session.commit()
             return redirect(url_for('my_pets'))
-        # app.py - Itt is minden lista kell a módosításhoz:
+
+        # Kiválasztjuk, melyik listát küldjük el a HTML-nek 'breeds' néven
+        if pet.type == 'cat':
+            current_breeds = CAT_BREEDS
+        elif pet.type == 'dog':
+            current_breeds = DOG_BREEDS
+        else:
+            current_breeds = OTHER_BREEDS
+
         return render_template('edit_pet.html', 
-                            pet=pet, 
-                            colors=COLORS, 
-                            dog_breeds=DOG_BREEDS, 
-                            cat_breeds=CAT_BREEDS, 
-                            other_breeds=OTHER_BREEDS)
+                                pet=pet, 
+                                colors=COLORS, 
+                                breeds=current_breeds, # Ez a dinamikus listánk
+                                dog_breeds=DOG_BREEDS, # Visszatesszük a biztonság kedvéért
+                                cat_breeds=CAT_BREEDS,
+                                other_breeds=OTHER_BREEDS)
         ##return render_template('edit_pet.html', pet=pet)
     
     ######################xxxx
@@ -278,6 +287,13 @@ def create_app():
         pet = Animal.query.get_or_404(pet_id)
         return render_template('pet_detail.html', pet=pet)
     #######################
+
+    @app.route('/pet/analyze/<int:pet_id>')
+    @login_required
+    def analyze_pet(pet_id):
+        pet = Animal.query.get_or_404(pet_id)
+        # Itt egyelőre csak visszaadjuk az oldalt, az AI később jön
+        return render_template('analyze.html', pet=pet)
 
     @app.route('/delete_pet/<int:pet_id>', methods=['POST'])
     @login_required
