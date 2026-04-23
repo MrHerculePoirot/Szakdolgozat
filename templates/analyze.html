@@ -28,6 +28,15 @@
                     <p class="text-muted italic">A párosítás az adatok beolvasása után kezdődik.</p>
                 </div>
             </div>
+
+            <div id="ai-analyzer-container" data-pet-id="{{ pet.id }}">
+                </div>
+            {% block scripts %}
+                <script src="{{ url_for('static', filename='js/ai_analyzer.js') }}"></script>
+            {% endblock %}
+
+
+
         </div>
     </div>
 </div>
