@@ -1,36 +1,32 @@
-// static/js/ai_analyzer.js
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Kiolvassuk a petId-t a HTML-ben elhelyezett data-attribútumból
-    const analyzerContainer = document.getElementById('ai-analyzer-container');
-    if (!analyzerContainer) return;
+    const container = document.getElementById('ai-analyzer-container');
+    if (!container) return;
 
-    const petId = analyzerContainer.dataset.petId;
+    const petId = container.getAttribute('data-pet-id');
     const statusText = document.getElementById('ai-status');
 
-    // Meghívjuk a Python API-t
-    fetch(`/api/analyze/${petId}`)
-        .then(response => response.json())
-        .then(data => {
-            // Frissítjük a kártyát az eredményekkel
-            statusText.innerHTML = `
-                <div class="result-item" style="margin-bottom: 8px;">
-                    <strong>Becsült fajta:</strong> ${data.breed}
-                </div>
-                <div class="result-item" style="margin-bottom: 8px;">
-                    <strong>Életkor:</strong> ${data.age_group}
-                </div>
-                <div class="result-item" style="margin-bottom: 8px;">
-                    <strong>Nem:</strong> ${data.gender}
-                </div>
-                <div class="mt-2 text-muted small" style="border-top: 1px solid #eee; padding-top: 5px;">
-                    Megbízhatóság: ${(data.confidence * 100).toFixed(1)}%
-                </div>
-            `;
-            console.log("AI elemzés sikeres:", data);
-        })
-        .catch(error => {
-            console.error('Hiba az AI elemzés során:', error);
-            statusText.innerHTML = '<span class="text-danger">Hiba történt az elemzés során.</span>';
-        });
+    // Automatikus indítás a betöltés után
+    setTimeout(() => {
+        fetch(`/api/analyze/${petId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    statusText.innerHTML = `<i class="fas fa-exclamation-triangle text-danger"></i> Hiba: ${data.error}`;
+                } else {
+                    statusText.innerHTML = `
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-check-circle"></i> Elemzés kész!</h5>
+                            <hr>
+                            <p><strong>Fajta tipp:</strong> ${data.breed}</p>
+                            <p><strong>Megbízhatóság:</strong> ${data.confidence}%</p>
+                            <p class="small text-muted">Megjegyzés: Az AI 1000 kategória alapján választott.</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                statusText.innerHTML = `<i class="fas fa-bug text-danger"></i> Hálózati hiba történt.`;
+                console.error('Error:', error);
+            });
+    }, 1500);
 });

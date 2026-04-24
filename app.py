@@ -1,6 +1,7 @@
 import os
 import random
 from flask_migrate import Migrate, upgrade
+from ai_engine import analyze_pet_image
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from dotenv import load_dotenv
 from datetime import datetime
@@ -288,12 +289,25 @@ def create_app():
         return render_template('pet_detail.html', pet=pet)
     #######################
 
+    # JAVÍTÁS: Ez az útvonal tölti be az elemző oldalt (HTML)
     @app.route('/pet/analyze/<int:pet_id>')
     @login_required
     def analyze_pet(pet_id):
         pet = Animal.query.get_or_404(pet_id)
-        # Itt egyelőre csak visszaadjuk az oldalt, az AI később jön
         return render_template('analyze.html', pet=pet)
+
+    # Ez az útvonal végzi a tényleges számítást (JSON)
+    @app.route('/api/analyze/<int:pet_id>')
+    @login_required
+    def api_analyze_pet(pet_id):
+        pet = Animal.query.get_or_404(pet_id)
+        photos = pet.photo_path.split(',') if pet.photo_path else []
+        if not photos:
+            return jsonify({"error": "Nincs fotó a vizsgálathoz"}), 400
+        
+        img_path = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{pet.id}', photos[0])
+        result = analyze_pet_image(img_path)
+        return jsonify(result)
 
     @app.route('/delete_pet/<int:pet_id>', methods=['POST'])
     @login_required
