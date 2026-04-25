@@ -28,19 +28,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
 
                     // Matchmaking eredmények megjelenítése (3. PONT: Képelemzés alapú)
+                    // ai_analyzer.js vonatkozó része
                     if (data.matches && data.matches.length > 0) {
-                        let matchesHtml = '<ul class="list-group list-group-flush">';
+                        let matchesHtml = '<div class="list-group list-group-flush shadow-sm">';
                         data.matches.forEach(match => {
                             matchesHtml += `
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <a href="/pet/${match.id}">${match.name}</a>
-                                    <span class="badge bg-primary rounded-pill">${match.score}% egyezés</span>
-                                </li>`;
+                                <a href="/pet/${match.id}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-paw text-primary me-2"></i>
+                                        <strong>${match.name}</strong> 
+                                        <small class="text-muted ml-2">(${match.status})</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill p-2">
+                                        <i class="fas fa-equals"></i> ${match.score}% egyezés
+                                    </span>
+                                </a>`;
                         });
-                        matchesHtml += '</ul>';
+                        matchesHtml += '</div>';
                         matchesCardBody.innerHTML = matchesHtml;
                     } else {
-                        matchesCardBody.innerHTML = '<p class="text-muted">Nem találtam vizuálisan hasonló állatot az adatbázisban.</p>';
+                        matchesCardBody.innerHTML = `
+                            <div class="text-center py-3">
+                                <p class="text-muted mb-0">Nem találtam vizuálisan hasonló állatot az adatbázisban.</p>
+                            </div>`;
                     }
                 }
             })
