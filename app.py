@@ -300,13 +300,44 @@ def create_app():
     @app.route('/api/analyze/<int:pet_id>')
     @login_required
     def api_analyze_pet(pet_id):
-        pet = Animal.query.get_or_404(pet_id)
-        photos = pet.photo_path.split(',') if pet.photo_path else []
-        if not photos:
-            return jsonify({"error": "Nincs fotó a vizsgálathoz"}), 400
+        from ai_engine import calculate_similarity # Import helyben
         
-        img_path = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{pet.id}', photos[0])
+        current_pet = Animal.query.get_or_404(pet_id)
+        photos = current_pet.photo_path.split(',') if current_pet.photo_path else []
+        
+        if not photos:
+            return jsonify({"error": "Nincs fotó"}), 400
+        
+        # 1. Saját kép elemzése
+        img_path = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{current_pet.id}', photos[0])
         result = analyze_pet_image(img_path)
+        
+        # 2. Matchmaking (Keresés a többi állat között)
+        matches = []
+        # Csak azokat nézzük, amik nem az aktuális állat, és ellentétes vagy kereshető státuszúak
+        other_pets = Animal.query.filter(Animal.id != pet_id).all()
+        
+        for other in other_pets:
+            other_photos = other.photo_path.split(',') if other.photo_path else []
+            if other_photos:
+                other_img_path = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{other.id}', other_photos[0])
+                try:
+                    # Kép alapú hasonlóság számítása
+                    score = calculate_similarity(img_path, other_img_path)
+                    
+                    # Ha 75% feletti az egyezés, betesszük a találatok közé
+                    if score > 0.75:
+                        matches.append({
+                            "id": other.id,
+                            "name": other.name,
+                            "score": round(score * 100, 1),
+                            "status": other.status
+                        })
+                except:
+                    continue
+
+        # Rendezés a legjobb találatok szerint
+        result['matches'] = sorted(matches, key=lambda x: x['score'], reverse=True)[:3]
         return jsonify(result)
 
     @app.route('/delete_pet/<int:pet_id>', methods=['POST'])
