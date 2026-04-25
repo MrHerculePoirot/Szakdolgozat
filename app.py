@@ -326,7 +326,7 @@ def create_app():
                     score = calculate_similarity(img_path, other_img_path)
                     
                     # Ha 75% feletti az egyezés, betesszük a találatok közé
-                    if score > 0.75:
+                    if score > 0.50:  # 0.75 helyett legyen 0.50
                         matches.append({
                             "id": other.id,
                             "name": other.name,
