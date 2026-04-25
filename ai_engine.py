@@ -66,5 +66,6 @@ def get_image_features(img_path):
 def calculate_similarity(img_path1, img_path2):
     feat1 = get_image_features(img_path1)
     feat2 = get_image_features(img_path2)
-    # Koszinusz hasonlóság (1.0 a tökéletes egyezés)
-    return 1 - distance.cosine(feat1, feat2)
+    # A .item() vagy a float() kényszeríti ki a JSON-barát típust
+    sim = 1 - distance.cosine(feat1, feat2)
+    return float(sim)

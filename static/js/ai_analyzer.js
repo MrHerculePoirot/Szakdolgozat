@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const petId = container.getAttribute('data-pet-id');
     const statusText = document.getElementById('ai-status');
-    const matchesCardBody = document.querySelector('.card-border-secondary .card-body') || 
+    const matchesCardBody = document.querySelector('.border-secondary .card-body') || 
                            document.querySelectorAll('.card-body')[1];
 
     // 2. PONT: Visszajelzés az indításról
