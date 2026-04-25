@@ -77,7 +77,7 @@ function initMap() {
         zoomControl: true
     });
 
-    // Rács frissítése minden mozgás után
+    // Autofrissítés
     map.addListener('idle', () => drawGraticule(map));
 
     const infoWindow = new google.maps.InfoWindow();

@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Elemek keresése (ID alapján, amit a HTML-ben megadtunk)
+
+    // 1. Elemek keresése (a html fájlban megadottak alapján)
     const typeSelect = document.getElementById('pet_type') || document.getElementById('filter_type');
     const breedSelect = document.getElementById('pet_breed') || document.getElementById('filter_breed');
     const dataContainer = document.getElementById('breed-data');
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 3. Frissítő funkció
     function updateBreeds(selectedType, selectedBreed) {
-        // Alaphelyzet beállítása (szűrésnél "Összes", rögzítésnél a felszólítás)
+        // Alaphelyzet beállítása
         breedSelect.innerHTML = isFilter 
             ? '<option value="all">Összes fajta</option>' 
             : '<option value="" disabled selected>- válassz fajtát -</option>';

@@ -17,7 +17,7 @@
         <div class="nav-right">
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('my_pets') }}" class="user-link">{{ current_user.username }}</a>
-                <a href="{{ url_for('add_pet') }}" class="nav-link">+ Új állat</a>
+                <a href="{{ url_for('add_pet') }}" class="nav-link">Új állat hozzáadása</a>
                 <a href="/logout" class="nav-link">Kijelentkezés</a>
             {% else %}
                 <span class="user-display">Nincs aktív fiók</span>

@@ -36,12 +36,11 @@ body {
     font-style: italic;
 }
 
-/* Tartalom konténer */
 .content {
     padding: 20px;
 }
 
-/* Térkép stílusa */
+/* Térkép */
 #map { 
     height: 600px; 
     width: 100%; 
@@ -54,7 +53,7 @@ h1, h2 {
     color: #2c3e50;
 }
 
-/* Formok stílusa (Login/Register) */
+/* Formok stílusa (Bejelentkezés és regisztráció) */
 form {
     background: white;
     padding: 30px;
@@ -347,24 +346,23 @@ select {
     font-weight: bold;
 }
 
-/* Fő elrendezés: a rács és a szűrő egymás mellé tétele */
+/* Mi- Kártyák és a kereső egymás mellé tétele */
 .main-content-layout {
     display: flex;
-    gap: 30px; /* Távolság a kártyák és a szűrő között */
+    gap: 30px; /* Distance */
     align-items: flex-start;
 }
 
-/* A kártyák rácsa rugalmasan kitölti a maradék helyet */
 .pet-grid {
-    flex: 3; /* Több helyet kap, mint a szűrő */
+    flex: 3;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
 }
 
-/* A szűrő sáv (Sidebar) stílusa a jobb szélen */
+/* MI - A szűrő sáv a jobb szélen */
 .sidebar-filter {
-    flex: 1; /* Kevesebb helyet foglal el */
+    flex: 1;
     min-width: 250px;
     background: #f8f9fa;
     padding: 20px;
@@ -381,7 +379,7 @@ select {
 }
 
 .filter-group input, .filter-group select {
-    width: 100%; /* Kitöltik a rendelkezésre álló szélességet */
+    width: 100%; /* Szélességkitöltés */
     padding: 10px;
     border: 1px solid #ced4da;
     border-radius: 6px;
