@@ -393,3 +393,72 @@ select {
     color: #6c757d;
     text-decoration: none;
 }
+
+/*ddddddddddddddddd*/
+
+.user-profile-card {
+    border: 2px solid #3498db;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-card-header {
+    background-color: #3498db;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.user-details {
+    margin-bottom: 20px;
+}
+
+.user-details p {
+    margin: 10px 0 !important;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.social-link-text {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.card-actions-profile {
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.btn-account-delete {
+    background-color: transparent;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    font-size: 0.85rem;
+    padding: 8px;
+    transition: all 0.3s;
+}
+
+.btn-account-delete:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Biztosítjuk, hogy a rács szépen kezelje az elemeket */
+.pet-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+    align-items: stretch;
+}
+
+/* Igazítás a korábbi navbar hiba javításához */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

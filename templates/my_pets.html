@@ -1,15 +1,47 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="container">
-    <h2>Saját bejelentéseim</h2>
+    <h2 class="page-title"><i class="fas fa-list"></i> Saját bejelentéseim</h2>
+    
     <div class="pet-list">
+        <!-- 1. FELHASZNÁLÓI PROFIL KÁRTYA - AZ ELSŐ HELYEN -->
+        <div class="pet-card">
+            <div class="pet-media" style="background-color: #34495e; display: flex; align-items: center; justify-content: center; color: white;">
+                <i class="fas fa-user-circle" style="font-size: 5rem;"></i>
+            </div>
+
+            <div class="pet-info">
+                <h3>{{ current_user.username }}</h3>
+                <p><strong>Mobil:</strong> {{ current_user.phone or "Nincs megadva" }}</p>
+                <p><strong>Social:</strong> 
+                    {% if current_user.social_link %}
+                        <a href="{{ current_user.social_link }}" target="_blank" style="color: #27ae60; text-decoration: none;">Link megnyitása</a>
+                    {% else %}
+                        <span class="text-muted">Nincs megadva</span>
+                    {% endif %}
+                </p>
+                
+                <div class="card-actions">
+                    <!-- Szerkesztés gomb (ha van profil szerkesztő oldalad, ide linkelheted) -->
+                    <a href="#" class="btn-edit">Szerkesztés</a>
+                    
+                    <!-- Fiók törlése gomb -->
+                    <form action="{{ url_for('delete_account') }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-delete" onclick="return confirm('VIGYÁZAT! A fiók törlésével az ÖSSZES bejelentett állatod és adatod véglegesen törlődik. Biztosan folytatod?')">Törlés</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. REGISZTRÁLT ÁLLATOK LISTÁZÁSA -->
         {% for pet in pets %}
         <div class="pet-card">
             <div class="pet-media">
                 {% if pet.photo_path %}
                     {# Szétvágjuk a listát és az első képet vesszük ki borítóképnek #}
                     {% set photos = pet.photo_path.split(',') %}
-                    <img src="{{ url_for('static', filename='uploads/pet_' ~ pet.id ~ '/' ~ photos[0]) }}" class="pet-thumb">
+                    <img src="{{ url_for('static', filename='uploads/pet_' ~ pet.id ~ '/' ~ photos[0]) }}" class="pet-thumb" alt="{{ pet.name }}">
                 {% else %}
                     <div class="pet-placeholder">
                         {{ "KUTYA" if pet.type == 'dog' else "MACSKA" if pet.type == 'cat' else "EGYÉB" }}
@@ -26,7 +58,7 @@
                 <div class="card-actions">
                     <a href="{{ url_for('edit_pet', pet_id=pet.id) }}" class="btn-edit">Szerkesztés</a>
                     <form action="{{ url_for('delete_pet', pet_id=pet.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn-delete" onclick="return confirm('Biztosan törlöd?')">Törlés</button>
+                        <button type="submit" class="btn-delete" onclick="return confirm('Biztosan törlöd ezt a bejelentést?')">Törlés</button>
                     </form>
                 </div>
             </div>

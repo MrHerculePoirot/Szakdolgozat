@@ -281,6 +281,33 @@ def create_app():
                                 other_breeds=OTHER_BREEDS)
         ##return render_template('edit_pet.html', pet=pet)
     
+
+############
+    @app.route('/delete_account', methods=['POST'])
+    @login_required
+    def delete_account():
+        user = User.query.get(current_user.id)
+        user_pets = Animal.query.filter_by(user_id=user.id).all()
+        
+        for pet in user_pets:
+            # Itt is érdemes megpróbálni a fájlok törlését a 13-as hiba ellen
+            if pet.photo_path:
+                pet_dir = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{pet.id}')
+                # Csak megpróbáljuk, ha nem megy (13-as hiba), nem omlik össze
+                try:
+                    import shutil
+                    shutil.rmtree(pet_dir, ignore_errors=True) 
+                except:
+                    pass
+            db.session.delete(pet)
+        
+        db.session.delete(user)
+        db.session.commit()
+        logout_user()
+        flash("A fiókod törlésre került.")
+        return redirect(url_for('index'))
+############
+
     ######################xxxx
     @app.route('/pet/<int:pet_id>')
     def pet_detail(pet_id):
@@ -339,22 +366,31 @@ def create_app():
         # Rendezés a legjobb találatok szerint
         result['matches'] = sorted(matches, key=lambda x: x['score'], reverse=True)[:3]
         return jsonify(result)
+    
 
+    # app.py - Keresd meg a delete_pet részt és javítsuk így:
     @app.route('/delete_pet/<int:pet_id>', methods=['POST'])
     @login_required
     def delete_pet(pet_id):
         pet = Animal.query.get_or_404(pet_id)
         if pet.user_id != current_user.id:
             return "Nincs jogosultságod!", 403
+        
+        # Hibatűrőbb törlés
         if pet.photo_path:
-            try:
-                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], pet.photo_path))
-            except:
-                pass 
+            photo_list = pet.photo_path.split(',')
+            for photo in photo_list:
+                try:
+                    path = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{pet.id}', photo)
+                    if os.path.exists(path):
+                        os.remove(path)
+                except Exception as e:
+                    print(f"Fájl törlési hiba (kihagyva): {e}") # Nem dobunk Error 500-at
+
         db.session.delete(pet)
         db.session.commit()
         return redirect(url_for('my_pets'))
-    
+
 
     @app.route('/all_pets')
     def all_pets():
