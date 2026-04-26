@@ -228,6 +228,15 @@ def create_app():
                                other_breeds=OTHER_BREEDS)
         ##return render_template('add_pet.html')
 
+    @app.route('/user/<int:user_id>')
+    def user_public_profile(user_id):
+        # Lekérjük a felhasználót az ID alapján
+        user = User.query.get_or_404(user_id)
+        # Lekérjük az összes állatát
+        user_pets = Animal.query.filter_by(user_id=user.id).all()
+        
+        return render_template('user_profile.html', user=user, pets=user_pets)
+
     @app.route('/my_pets')
     @login_required
     def my_pets():

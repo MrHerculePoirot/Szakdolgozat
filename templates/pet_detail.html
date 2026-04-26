@@ -55,8 +55,13 @@
                 {% endif %}
             </p>
 
-            <h3>Kapcsolat</h3>
-            <p><strong>Bejelentő telefonja:</strong> {{ pet.owner.phone }}</p>
+                <h3>Kapcsolat</h3>
+                <p><strong>Bejelentő:</strong> 
+                    <a href="{{ url_for('user_public_profile', user_id=pet.owner.id) }}" class="text-primary font-weight-bold">
+                        {{ pet.owner.username }} profilja
+                    </a>
+                </p>
+                <p><strong>Bejelentő telefonja:</strong> {{ pet.owner.phone }}</p>
         </div>
     </div>
 

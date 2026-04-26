@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="page-title"><i class="fas fa-user"></i> {{ user.username }} profilja</h2>
+    <p class="text-muted">A felhasználó által feltöltött összes bejelentés.</p>
+    <hr>
+    
+    <div class="pet-list">
+        <!-- 1. FELHASZNÁLÓI PROFIL KÁRTYA (SZERKESZTÉS NÉLKÜL) -->
+        <div class="pet-card">
+            <div class="pet-media" style="background-color: #34495e; display: flex; align-items: center; justify-content: center; color: white;">
+                <i class="fas fa-user-circle" style="font-size: 5rem;"></i>
+            </div>
+
+            <div class="pet-info">
+                <h3>{{ user.username }}</h3>
+                <p><strong>Mobil:</strong> {{ user.phone or "Nincs megadva" }}</p>
+                <p><strong>Social:</strong> 
+                    {% if user.social_link %}
+                        <a href="{{ user.social_link }}" target="_blank" style="color: #27ae60; text-decoration: none;">Link megnyitása</a>
+                    {% else %}
+                        <span class="text-muted">Nincs megadva</span>
+                    {% endif %}
+                </p>
+                <p><small>Felhasználói típus: Bejelentő</small></p>
+                
+                <!-- Itt nincs card-actions rész gombokkal -->
+            </div>
+        </div>
+
+        <!-- 2. AZ ADOTT FELHASZNÁLÓ ÁLLATAI -->
+        {% for pet in pets %}
+        <div class="pet-card">
+            <div class="pet-media">
+                {% if pet.photo_path %}
+                    {% set photos = pet.photo_path.split(',') %}
+                    <img src="{{ url_for('static', filename='uploads/pet_' ~ pet.id ~ '/' ~ photos[0]) }}" class="pet-thumb" alt="{{ pet.name }}">
+                {% else %}
+                    <div class="pet-placeholder">
+                        {{ "KUTYA" if pet.type == 'dog' else "MACSKA" if pet.type == 'cat' else "EGYÉB" }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="pet-info">
+                <h3><a href="{{ url_for('pet_detail', pet_id=pet.id) }}" style="text-decoration: none; color: inherit;">{{ pet.name or "Névtelen" }}</a></h3>
+                <p><strong>Státusz:</strong> {{ pet.status }}</p>
+                <p>{{ pet.breed }} - {{ pet.colour }}</p>
+                <p><small>Chip: {{ pet.chip_id or 'Nincs' }}</small></p>
+                
+                <!-- Gombok eltávolítva -->
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-4">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">Vissza az előző oldalra</a>
+    </div>
+</div>
+{% endblock %}
