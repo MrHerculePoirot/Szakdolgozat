@@ -1,8 +1,11 @@
 import os
 import random
+import shutil
 from flask_migrate import Migrate, upgrade
 from ai_engine import analyze_pet_image
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from dotenv import load_dotenv
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -10,8 +13,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, init_app
 from models.address import Address
-from models.phone import PhoneNumber
 from models.user import User
+from models.phone import PhoneNumber
 from models.animal import Animal, Dog, Cat, Other
 
 # Környezeti változók betöltése
@@ -33,11 +36,45 @@ ALL_BREEDS = sorted(list(set(DOG_BREEDS + CAT_BREEDS + OTHER_BREEDS)))
 def create_app():
     app = Flask(__name__)
 
-    # Konfiguráció
+    # --- KONFIGURÁCIÓ ---
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'pet_finder.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = 'SECRETKEY'
+    app.config['SECRET_KEY'] = 'NAGYON_TITKOS_KULCS_123'
+    app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+    # --- MAILTRAP SANDBOX KONFIGURÁCIÓ ---
+    # IDE ÍRD BE A SAJÁT ADATAIDAT!
+    app.config['MAIL_SERVER'] = 'sandbox.smtp.mailtrap.io'
+    app.config['MAIL_PORT'] = 2525
+    app.config['MAIL_USERNAME'] = os.getenv('MAILTRAP_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAILTRAP_PASSWORD')
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
+    app.config['MAIL_DEFAULT_SENDER'] = 'noreply@petfinder.hu'
+
+    # Szolgáltatások inicializálása
+    mail = Mail(app)
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+
+    def send_verification_email(user_email):
+        # Generálunk egy tokent az email címből
+        token = serializer.dumps(user_email, salt='email-confirm')
+        # Létrehozzuk a teljes linket, ami a confirm_email útvonalra mutat
+        confirm_url = url_for('confirm_email', token=token, _external=True)
+        
+        msg = Message('Regisztráció megerősítése - Pet Finder', recipients=[user_email])
+        msg.body = f'Köszönjük, hogy csatlakoztál hozzánk! Kérjük, kattints az alábbi linkre a fiókod aktiválásához:\n\n{confirm_url}\n\nA link 1 óráig érvényes.'
+        
+        try:
+            mail.send(msg)
+            print(f"Email elküldve: {user_email}")
+        except Exception as e:
+            print(f"Hiba az email küldésekor: {e}")
+
+    #init_app(app)
+    #migrate = Migrate(app, db)
 
     # Fájlfeltöltés beállításai
     UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -98,22 +135,65 @@ def create_app():
         # Itt a pets_metadata-t KELL átadni, amit az imént töltöttél fel adatokkal!
         return render_template('map.html', api_key=api_key, pets_metadata=pets_metadata)
     
+  
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
+            email = request.form.get('email')
+            if User.query.filter_by(email=email).first():
+                flash("Ez az email cím már foglalt!")
+                return redirect(url_for('register'))
+
+            # Mivel a User modelledben 'contact_id' (foreign key) van a phone_numbers táblára:
+            # 1. Létrehozzuk a telefonszám objektumot
+            user_phone = PhoneNumber(phone_number=request.form.get('phone'))
+            db.session.add(user_phone)
+            db.session.flush() # Hogy legyen ID-ja
+
             hashed_pw = generate_password_hash(request.form.get('password'))
+            
+            # 2. Létrehozzuk a felhasználót a kapcsolattal
             new_user = User(
                 username=request.form.get('username'),
-                email=request.form.get('email'),
+                email=email,
                 password_hash=hashed_pw,
-                phone=request.form.get('phone'),
+                contact_id=user_phone.id, # Az ID-t adjuk át a modellednek megfelelően
                 social_link=request.form.get('social_link'),
-                is_active=True
+                is_active=False 
             )
+            
             db.session.add(new_user)
-            db.session.commit()
-            return redirect(url_for('login'))
+            
+            try:
+                db.session.commit()
+                send_verification_email(email)
+                flash("Regisztráció kész! Ellenőrizd a Mailtrap-et!")
+                return redirect(url_for('login'))
+            except Exception as e:
+                db.session.rollback()
+                print(f"Hiba a mentésnél: {e}")
+                flash("Hiba történt a regisztráció során.")
+                return redirect(url_for('register'))
+
         return render_template('register.html')
+
+        #return render_template('register.html')
+    @app.route('/confirm_email/<token>')
+    def confirm_email(token):
+        try:
+            email = serializer.loads(token, salt='email-confirm', max_age=3600)
+            user = User.query.filter_by(email=email).first_or_404()
+            if not user.is_active:
+                user.is_active = True
+                db.session.commit()
+                flash("Fiókod aktiválva! Most már bejelentkezhetsz.")
+            else:
+                flash("A fiók már aktív.")
+        except SignatureExpired:
+            flash("A link lejárt!")
+        except:
+            flash("Érvénytelen link!")
+        return redirect(url_for('login'))
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
