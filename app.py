@@ -282,6 +282,52 @@ def create_app():
         ##return render_template('edit_pet.html', pet=pet)
     
 
+    @app.route('/edit_user', methods=['GET', 'POST'])
+    @login_required
+    def edit_user():
+        if request.method == 'POST':
+            username = request.form.get('username')
+            phone = request.form.get('phone')
+            social_link = request.form.get('social_link')
+            new_password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
+
+            # 1. Alapadatok frissítése
+            # Ellenőrizzük, hogy a felhasználónév foglalt-e (kivéve a sajátunkat)
+            existing_user = User.query.filter(User.username == username, User.id != current_user.id).first()
+            if existing_user:
+                flash("Ez a felhasználónév már foglalt!")
+                return redirect(url_for('edit_user'))
+
+            current_user.username = username
+            current_user.phone = phone
+            current_user.social_link = social_link
+
+            # 2. Jelszó módosítás kezelése
+            if new_password:
+                if len(new_password) < 6:
+                    flash("A jelszónak legalább 6 karakternek kell lennie!")
+                    return redirect(url_for('edit_user'))
+                
+                if new_password != confirm_password:
+                    flash("A két jelszó nem egyezik!")
+                    return redirect(url_for('edit_user'))
+                
+                current_user.password_hash = generate_password_hash(new_password)
+
+            try:
+                db.session.commit()
+                flash("Profilod sikeresen frissítve!")
+                return redirect(url_for('my_pets'))
+            except Exception as e:
+                db.session.rollback()
+                flash("Hiba történt a mentés során!")
+                print(f"Hiba: {e}")
+                return redirect(url_for('edit_user'))
+
+        return render_template('edit_user.html')
+
+
 ############
     @app.route('/delete_account', methods=['POST'])
     @login_required

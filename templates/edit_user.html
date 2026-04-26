@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-user-edit"></i> Profil szerkesztése</h3>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('edit_user') }}" method="POST">
+                        <!-- Email (csak olvasható) -->
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email-cím (nem módosítható)</label>
+                            <input type="email" class="form-control bg-light" value="{{ current_user.email }}" readonly>
+                        </div>
+
+                        <!-- Felhasználónév -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Felhasználónév</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
+                        </div>
+
+                        <!-- Telefonszám -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Telefonszám</label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ current_user.phone or '' }}" placeholder="+36...">
+                        </div>
+
+                        <!-- Social Link -->
+                        <div class="mb-3">
+                            <label for="social_link" class="form-label">Közösségi média link (Facebook, Instagram stb.)</label>
+                            <input type="url" class="form-control" id="social_link" name="social_link" value="{{ current_user.social_link or '' }}" placeholder="https://...">
+                        </div>
+
+                        <hr>
+                        <h5 class="text-secondary mb-3">Jelszó módosítása (hagyd üresen, ha nem akarod megváltoztatni)</h5>
+
+                        <!-- Új jelszó -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Új jelszó</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Legalább 6 karakter">
+                        </div>
+
+                        <!-- Jelszó megerősítése -->
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label">Új jelszó megerősítése</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Módosítások mentése
+                            </button>
+                            <a href="{{ url_for('my_pets') }}" class="btn btn-outline-secondary">Mégse</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
