@@ -1,27 +1,27 @@
-Magyarország;+36
-Ausztria;+43
-Belgium;+32
-Bulgária;+359
-Ciprus;+357
-Csehország;+420
-Dánia;+45
-Észtország;+372
-Finnország;+358
-Franciaország;+33
-Görögország;+30
-Hollandia;+31
-Horvátország;+385
-Írország;+353
-Lengyelország;+48
-Lettország;+371
-Litvánia;+370
-Luxemburg;+352
-Málta;+356
-Németország;+49
-Olaszország;+39
-Portugália;+351
-Románia;+40
-Spanyolország;+34
-Svédország;+46
-Szlovákia;+421
-Szlovénia;+386
+🇭🇺 Magyarország +36;9
+🇦🇹 Ausztria +43;13
+🇧🇪 Belgium +32;9
+🇧🇬 Bulgária +359;9
+🇨🇾 Ciprus +357;8
+🇨🇿 Csehország +420;9
+🇩🇰 Dánia +45;8
+🇪🇪 Észtország +372;8
+🇫🇮 Finnország +358;10
+🇫🇷 Franciaország +33;9
+🇬🇷 Görögország +30;10
+🇳🇱 Hollandia +31;9
+🇭🇷 Horvátország +385;9
+🇮🇪 Írország +353;9
+🇵🇱 Lengyelország +48;9
+🇱🇻 Lettország +371;8
+🇱🇹 Litvánia +370;8
+🇱🇺 Luxemburg +352;9
+🇲🇹 Málta +356;8
+🇩🇪 Németország +49;11
+🇮🇹 Olaszország +39;10
+🇵🇹 Portugália +351;9
+🇷🇴 Románia +40;9
+🇪🇸 Spanyolország +34;9
+🇸🇪 Svédország +46;9
+🇸🇰 Szlovákia +421;9
+🇸🇮 Szlovénia +386;8

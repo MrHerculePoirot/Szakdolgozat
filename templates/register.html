@@ -1,19 +1,84 @@
 {% extends "base.html" %}
 
-{% block title %}Pet Finder - Térkép{% endblock %}
+{% block title %}Pet Finder - Regisztráció{% endblock %}
 
 {% block content %}
+<div class="form-container" style="max-width: 450px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+    <h2 class="mb-4 text-center" style="color: #2c3e50; font-weight: 700;">Regisztráció</h2>
+    
+    <!-- Csak az utolsó hibaüzenetet mutatjuk, hogy ne legyen tele a képernyő -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert" style="border-radius: 8px; font-size: 0.9rem;">
+          {{ messages[-1] }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endif %}
+    {% endwith %}
 
-    <h2>Regisztráció</h2>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Felhasználónév" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Jelszó" required>
+    <form method="POST" id="regForm">
+        <div class="form-group mb-2">
+            <input type="text" name="username" placeholder="Felhasználónév" required class="form-control py-4" style="border-radius: 8px;">
+        </div>
+        <div class="form-group mb-2">
+            <input type="email" name="email" placeholder="Email" required class="form-control py-4" style="border-radius: 8px;">
+        </div>
+        <div class="form-group mb-4">
+            <input type="password" name="password" placeholder="Jelszó" required class="form-control py-4" style="border-radius: 8px;">
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef;" class="mb-4">
+            <label class="small text-muted font-weight-bold mb-2 d-block text-uppercase">Telefonszám beállítása</label>
+            <div class="d-flex" style="gap: 10px;">
+                <!-- Országválasztó -->
+                <select name="country_idx" id="countrySelect" class="form-control" style="flex: 1.5; height: 45px; cursor: pointer; border-radius: 6px;" onchange="updatePlaceholder()">
+                    {% for country in countries %}
+                        <option value="{{ loop.index0 }}" data-len="{{ country.length }}">
+                            {{ country.display }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <!-- Telefonszám vége -->
+                <input type="text" name="phone_number_local" id="phoneInput" placeholder="Szám" required class="form-control" style="flex: 1; height: 45px; border-radius: 6px;">
+            </div>
+            <small id="phoneHint" class="text-info mt-2 d-block font-italic" style="font-size: 0.8rem;"></small>
+        </div>
+
+        <div class="form-group mb-4">
+            <input type="text" name="social_link" placeholder="Közösségi média link (opcionális)" class="form-control py-4" style="border-radius: 8px;">
+        </div>
             
-        <input type="text" name="phone" placeholder="Telefonszám (pl. +36...)">
-        <input type="text" name="social_link" placeholder="Közösségi média link (opcionális)">
-            
-        <button type="submit">Regisztráció és hitelesítés</button>
+        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm" style="background-color: #007bff; border: none; font-weight: 600; padding: 12px; border-radius: 8px;">
+            Regisztráció és hitelesítés
+        </button>
     </form>
-    <p>Már van fiókod? <a href="/login">Jelentkezz be!</a></p>
+    <p class="mt-4 text-center text-muted" style="font-size: 0.9rem;">
+        Már van fiókod? <a href="/login" class="font-weight-bold text-primary">Jelentkezz be!</a>
+    </p>
+</div>
+
+<script>
+function updatePlaceholder() {
+    const select = document.getElementById('countrySelect');
+    const input = document.getElementById('phoneInput');
+    const hint = document.getElementById('phoneHint');
+    
+    if (!select || select.options.length === 0) return;
+    
+    const selectedOption = select.options[select.selectedIndex];
+    const requiredLen = selectedOption.getAttribute('data-len');
+    
+    // HTML5 validáció: beállítjuk a hosszt az inputnak is
+    input.setAttribute('minlength', requiredLen);
+    input.setAttribute('maxlength', requiredLen);
+    input.placeholder = "Pl: " + "1".repeat(requiredLen);
+    
+    hint.innerHTML = '<i class="fas fa-info-circle"></i> Ehhez az országhoz <strong>' + requiredLen + '</strong> számjegy szükséges.';
+}
+
+// Betöltéskor azonnal állítsa be az alapértelmezett országot (Magyarország)
+document.addEventListener('DOMContentLoaded', updatePlaceholder);
+</script>
 {% endblock %}

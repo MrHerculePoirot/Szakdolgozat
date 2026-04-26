@@ -24,6 +24,26 @@ def load_list(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         # Csak azokat a sorokat tartjuk meg, amik nem üresek és nem [source...]-szal kezdődnek
         return [line.strip() for line in f if line.strip() and not line.startswith('[')]
+    
+def load_countries():
+    countries = []
+    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'countries.txt')
+    if os.path.exists(path):
+        with open(path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if ';' in line:
+                    parts = line.strip().split(';')
+                    display_part = parts[0]
+                    length = int(parts[1])
+                    prefix = display_part.split(' ')[-1]
+                    countries.append({
+                        'display': display_part,
+                        'prefix': prefix,
+                        'length': length
+                    })
+    return countries
+
+COUNTRIES = load_countries() # Ez az, ami hiányzik a kódodból!
 
 # Listák betöltése a fájlokból
 COLORS = load_list('colors.txt')
@@ -175,7 +195,7 @@ def create_app():
                 flash("Hiba történt a regisztráció során.")
                 return redirect(url_for('register'))
 
-        return render_template('register.html')
+        return render_template('register.html', countries=COUNTRIES)
 
         #return render_template('register.html')
     @app.route('/confirm_email/<token>')
