@@ -3,26 +3,26 @@ import random
 import shutil
 from flask_migrate import Migrate, upgrade
 from ai_engine import analyze_pet_image
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
-from flask_mail import Mail, Message
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash #MI - Import pontos meghatározásához AI asszisztenciát vettem igénybe.
+from flask_mail import Mail, Message #MI - Import pontos meghatározásához AI asszisztenciát vettem igénybe.
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired #MI - Import pontos meghatározásához AI asszisztenciát vettem igénybe.
 from dotenv import load_dotenv
 from datetime import datetime
-from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.utils import secure_filename #MI - Import pontos meghatározásához AI asszisztenciát vettem igénybe.
+from werkzeug.security import generate_password_hash, check_password_hash #MI - Import pontos meghatározásához AI asszisztenciát vettem igénybe.
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user #MI - Import pontos meghatározásához AI asszisztenciát vettem igénybe.
 from models import db, init_app
 from models.address import Address
 from models.user import User
 from models.phone import PhoneNumber
 from models.animal import Animal, Dog, Cat, Other
 
-# Környezeti változók betöltése
+# Környezeti (.env) változók betöltése 
 load_dotenv()
 
 def load_list(filename):
     with open(filename, 'r', encoding='utf-8') as f:
-        # Csak azokat a sorokat tartjuk meg, amik nem üresek és nem [source...]-szal kezdődnek
+        # Csak azokat a sorokat tartjuk meg, amelyek értéket tartalmaznak.
         return [line.strip() for line in f if line.strip() and not line.startswith('[')]
     
 def load_countries():
@@ -43,14 +43,14 @@ def load_countries():
                     })
     return countries
 
-COUNTRIES = load_countries() # Ez az, ami hiányzik a kódodból!
+COUNTRIES = load_countries()
 
 # Listák betöltése a fájlokból
 COLORS = load_list('colors.txt')
 DOG_BREEDS = load_list('dog_breeds.txt')
 CAT_BREEDS = load_list('cat_breeds.txt')
 OTHER_BREEDS = load_list('other_breeds.txt')
-# Ez az összesített lista a szűréshez kell majd
+# Ez az összesített lista a keresőmotorhoz kell majd
 ALL_BREEDS = sorted(list(set(DOG_BREEDS + CAT_BREEDS + OTHER_BREEDS)))
 
 def create_app():
@@ -64,12 +64,14 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-    # --- MAILTRAP SANDBOX KONFIGURÁCIÓ ---
-    # IDE ÍRD BE A SAJÁT ADATAIDAT!
+    # MAILTRAP SANDBOX konfiguráció
+    # A MAILTRAP SANDBOX egy olyan tesztkörnyezet,
+    # amelyben biztonságosan lehet e-maileket küldeni és fogadni anélkül,
+    # hogy azok valódi címzettekhez jutnának el.
     app.config['MAIL_SERVER'] = 'sandbox.smtp.mailtrap.io'
     app.config['MAIL_PORT'] = 2525
-    app.config['MAIL_USERNAME'] = os.getenv('MAILTRAP_USERNAME')
-    app.config['MAIL_PASSWORD'] = os.getenv('MAILTRAP_PASSWORD')
+    app.config['MAIL_USERNAME'] = os.getenv('MAILTRAP_USERNAME') #.env fájlban tárolom
+    app.config['MAIL_PASSWORD'] = os.getenv('MAILTRAP_PASSWORD') #.env fájlban tárolom
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
     app.config['MAIL_DEFAULT_SENDER'] = 'noreply@petfinder.hu'
@@ -81,7 +83,8 @@ def create_app():
     def send_verification_email(user_email):
         # Generálunk egy tokent az email címből
         token = serializer.dumps(user_email, salt='email-confirm')
-        # Létrehozzuk a teljes linket, ami a confirm_email útvonalra mutat
+        # Létrehozzuk a teljes linket.
+        # Ennek segítségével fogjuk a profilunk hitelesíteni.
         confirm_url = url_for('confirm_email', token=token, _external=True)
         
         msg = Message('Regisztráció megerősítése - Pet Finder', recipients=[user_email])
@@ -93,9 +96,6 @@ def create_app():
         except Exception as e:
             print(f"Hiba az email küldésekor: {e}")
 
-    #init_app(app)
-    #migrate = Migrate(app, db)
-
     # Fájlfeltöltés beállításai
     UPLOAD_FOLDER = os.path.join('static', 'uploads')
     if not os.path.exists(UPLOAD_FOLDER):
@@ -103,13 +103,13 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-    # Adatbázis inicializálása
+    # Adatbázis létrehozása
     init_app(app)
     migrate = Migrate(app, db)
 
 
     with app.app_context():
-        # Ez a sor automatikusan frissíti az adatbázist indításkor
+        #Az adatbázis minden indítás alkalmával frissülni fog.
         if os.path.exists('migrations'):
             upgrade()
         print("Adatbázis sémák ellenőrizve és frissítve!")
@@ -126,28 +126,27 @@ def create_app():
         db.create_all()
         print("Adatbázis táblák sikeresen létrehozva!")
 
-    # --- ÚTVONALAK ---
 
+    #MI - Az első kettő útvonal szintaktikájához AI asszisztenciát vettem igénybe. (Utána meg tudtam írni magamtól.)
     @app.route('/')
     def index():
-        api_key = os.getenv('GOOGLE_MAPS_API_KEY')
+        api_key = os.getenv('GOOGLE_MAPS_API_KEY') #.env fájlban tárolom
         all_pets = Animal.query.all()
         pets_metadata = []
         
         for pet in all_pets:
             if pet.location:
-                # ... meglévő kódod ...
                 pets_metadata.append({
                     'id': pet.id,
                     'name': pet.name or "Névtelen állat",
                     'status': pet.status,
                     'full_address': f"{pet.location.city}, {pet.location.street}",
-                    'type': pet.type,  # EZT KELL HOZZÁADNI (dog, cat, etc.)
+                    'type': pet.type,  #Macska, Kutya, Egyéb
                     'photo_path': pet.photo_path,
                     'owner_phone': pet.owner.phone if pet.owner else "Nincs megadva"
                 })
         
-        return render_template('map.html', api_key=api_key, pets_metadata=pets_metadata)
+        return render_template('map.html', api_key=api_key, pets_metadata=pets_metadata) #MI - A visszatérési érték meghatározásához AI asszisztenciát használtam.
     
     @app.route('/register', methods=['GET', 'POST'])
     def register():
@@ -158,21 +157,21 @@ def create_app():
                 return redirect(url_for('register'))
 
             # Mivel a User modelledben 'contact_id' (foreign key) van a phone_numbers táblára:
-            # 1. Létrehozzuk a telefonszám objektumot
+            # Létrehozzuk a telefonszám objektumot
             user_phone = PhoneNumber(phone_number=request.form.get('phone'))
             db.session.add(user_phone)
             db.session.flush() # Hogy legyen ID-ja
 
             hashed_pw = generate_password_hash(request.form.get('password'))
             
-            # 2. Létrehozzuk a felhasználót a kapcsolattal
+            # Létrehozzuk a felhasználót a kapcsolattal
             new_user = User(
                 username=request.form.get('username'),
                 email=email,
                 password_hash=hashed_pw,
-                contact_id=user_phone.id, # Az ID-t adjuk át a modellednek megfelelően
+                contact_id=user_phone.id, #Az ID-t adjuk át a modellednek megfelelően
                 social_link=request.form.get('social_link'),
-                is_active=False 
+                is_active=False #Ez hitelesítés után megváltozik. Ez csak a alapértelmezett érték.
             )
             
             db.session.add(new_user)
@@ -190,9 +189,9 @@ def create_app():
 
         return render_template('register.html', countries=COUNTRIES)
 
-        #return render_template('register.html')
     @app.route('/confirm_email/<token>')
     def confirm_email(token):
+        #MI - A try blokkhoz AI asszisztenciát használtam
         try:
             email = serializer.loads(token, salt='email-confirm', max_age=3600)
             user = User.query.filter_by(email=email).first_or_404()
@@ -232,30 +231,31 @@ def create_app():
     @login_required
     def add_pet():
         if request.method == 'POST':
-            # 1. Helyszín adatok kinyerése
+            # Helyszín adatok kinyerése
+            # Mivel a Google Maps sem hitelesít - pl egy 1053-es irányítószámot nem javít ki 1054-re -,
+            # ezért a felhasználó felelőssége, hogy jó címet írjon.
             country = request.form.get('country')
             city = request.form.get('city')
             postcode = request.form.get('postcode')
             street = request.form.get('street')
 
-            # 2. Új helyszín (Address) létrehozása
+            #Új helyszín (új cím) létrehozása
             new_location = Address(
-                country=country,
-                city=city,
-                postcode=postcode,
-                street=street
+                country=country, #Kötelező
+                city=city, #Kötelező
+                postcode=postcode, #Nem kötelező
+                street=street #Nem kötelező
             )
             db.session.add(new_location)
-            db.session.flush()
+            db.session.flush() #MI - A flush működésének és használatának megértéséhez AI asszisztenciát vettem igánybe.
 
-            # 3. Chipszám validáció (15 jegyű szám)
+            #Chipszám validáció (15 jegyű szám).
             chip_id = request.form.get('chip_id')
             if chip_id and (not chip_id.isdigit() or len(chip_id) != 15):
                 return "Hiba: A chipszámnak pontosan 15 számjegyből kell állnia!", 400
 
-            # 4. Állat példányosítása típus alapján
+            #Állat példányosítása típus alapján.
             pet_type = request.form.get('type')
-            ##############xx
             last_seen_str = request.form.get('last_seen_date')
             last_seen_dt = None
             if request.form.get('status') == 'LOST' and last_seen_str:
@@ -263,7 +263,6 @@ def create_app():
                     last_seen_dt = datetime.strptime(last_seen_str, '%Y-%m-%d').date()
                 except ValueError:
                     last_seen_dt = None
-            ###########xxx
             if pet_type == 'dog':
                 new_pet = Dog(breed=request.form.get('breed'))
             elif pet_type == 'cat':
@@ -271,7 +270,8 @@ def create_app():
             else:
                 new_pet = Other(breed=request.form.get('breed'))
 
-            # 5. Adatok feltöltése az új mezőkkel
+            #MI - Az adatok felsorolásához és strukurálásához AI asszisztenciát használtam.
+            #Adatok feltöltése
             new_pet.name = request.form.get('name')
             new_pet.status = request.form.get('status')
             new_pet.colour = request.form.get('colour')
@@ -282,19 +282,21 @@ def create_app():
             new_pet.is_neutered = request.form.get('is_neutered') == 'true'
             new_pet.description = request.form.get('description')
             new_pet.user_id = current_user.id
-            new_pet.location_id = new_location.id # Kapcsolat az új néven
-            new_pet.last_seen_date = last_seen_dt  # Adatbázisba írjuk
+            new_pet.location_id = new_location.id
+            new_pet.last_seen_date = last_seen_dt
 
-            # 6. Több fotó kezelése és egyedi mappába rendezése
+            #Több fotó kezelése és egyedi mappába rendezése
+            #INFO - Lehetnek pontatlanságok/bugok benne, mert korábban csak egy képet engedtem.
             files = request.files.getlist('photo')[:4]
             filenames = []
             
             if files and files[0].filename != '':
-                # Először elmentjük az állatot, hogy legyen ID-ja
+                # Először elmentjük az állatot, hogy legyen ID azonosítója
                 db.session.add(new_pet)
-                db.session.flush() # Ez generálja le az ID-t az adatbázisban mentés előtt
+                db.session.flush() # Ez generálja le az ID azonsoítót az adatbázisban
 
-                # Létrehozzuk a mappát: static/uploads/pet_ID
+                #MI - Mappa létrehozásáhot AI asszisztenciát vettem igénybe
+                #Létrehozzuk a mappát: static/uploads/pet_ID
                 pet_folder_name = f'pet_{new_pet.id}'
                 pet_dir = os.path.join(app.config['UPLOAD_FOLDER'], pet_folder_name)
                 
@@ -304,7 +306,6 @@ def create_app():
                 for file in files:
                     if file.filename != '':
                         filename = secure_filename(file.filename)
-                        # A képet az új, saját mappájába mentjük
                         file.save(os.path.join(pet_dir, filename))
                         filenames.append(filename)
                 
@@ -313,19 +314,18 @@ def create_app():
             
             db.session.commit()
             return redirect(url_for('my_pets'))
-        # app.py - Keresd meg a függvény végét:
+        
         return render_template('add_pet.html', 
                                colors=COLORS, 
                                dog_breeds=DOG_BREEDS, 
                                cat_breeds=CAT_BREEDS, 
                                other_breeds=OTHER_BREEDS)
-        ##return render_template('add_pet.html')
 
     @app.route('/user/<int:user_id>')
     def user_public_profile(user_id):
-        # Lekérjük a felhasználót az ID alapján
+        # Lekérdezzük a felhasználót az ID azonosítója alapján
         user = User.query.get_or_404(user_id)
-        # Lekérjük az összes állatát
+        # Lekérdezzük az összes állatát
         user_pets = Animal.query.filter_by(user_id=user.id).all()
         
         return render_template('user_profile.html', user=user, pets=user_pets)
@@ -344,7 +344,7 @@ def create_app():
             return "Nincs jogosultságod!", 403
 
         if request.method == 'POST':
-            # Alapadatok frissítése
+            #MI - Az adatok frissítéséhez AI asszisztenciát használtam.
             pet.name = request.form.get('name')
             pet.status = request.form.get('status')
             pet.breed = request.form.get('breed')
@@ -356,7 +356,8 @@ def create_app():
             pet.description = request.form.get('description')
             pet.gender = request.form.get('gender')
 
-            # Helyszín frissítése (ha létezik a kapcsolat)
+            # Helyszín frissítése.
+            # Akkor tud megtörténni, ha létezik a kapcsolat.
             if pet.location:
                 pet.location.country = request.form.get('country')
                 pet.location.city = request.form.get('city')
@@ -377,11 +378,10 @@ def create_app():
         return render_template('edit_pet.html', 
                                 pet=pet, 
                                 colors=COLORS, 
-                                breeds=current_breeds, # Ez a dinamikus listánk
-                                dog_breeds=DOG_BREEDS, # Visszatesszük a biztonság kedvéért
+                                breeds=current_breeds, # Ez a dinamikus lista.
+                                dog_breeds=DOG_BREEDS,
                                 cat_breeds=CAT_BREEDS,
                                 other_breeds=OTHER_BREEDS)
-        ##return render_template('edit_pet.html', pet=pet)
     
 
     @app.route('/edit_user', methods=['GET', 'POST'])
@@ -394,8 +394,8 @@ def create_app():
             new_password = request.form.get('password')
             confirm_password = request.form.get('confirm_password')
 
-            # 1. Alapadatok frissítése
-            # Ellenőrizzük, hogy a felhasználónév foglalt-e (kivéve a sajátunkat)
+            #Alapadatok frissítése
+            #Ellenőrizzük, hogy a felhasználónév foglalt-e
             existing_user = User.query.filter(User.username == username, User.id != current_user.id).first()
             if existing_user:
                 flash("Ez a felhasználónév már foglalt!")
@@ -405,7 +405,7 @@ def create_app():
             current_user.phone = phone
             current_user.social_link = social_link
 
-            # 2. Jelszó módosítás kezelése
+            #Jelszó módosítása
             if new_password:
                 if len(new_password) < 6:
                     flash("A jelszónak legalább 6 karakternek kell lennie!")
@@ -429,8 +429,6 @@ def create_app():
 
         return render_template('edit_user.html')
 
-
-############
     @app.route('/delete_account', methods=['POST'])
     @login_required
     def delete_account():
@@ -438,11 +436,10 @@ def create_app():
         user_pets = Animal.query.filter_by(user_id=user.id).all()
         
         for pet in user_pets:
-            # Itt is érdemes megpróbálni a fájlok törlését a 13-as hiba ellen
             if pet.photo_path:
                 pet_dir = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{pet.id}')
-                # Csak megpróbáljuk, ha nem megy (13-as hiba), nem omlik össze
                 try:
+                    #MI - A try blokk megírásához AI asszisztenciát vettem igénybe.
                     import shutil
                     shutil.rmtree(pet_dir, ignore_errors=True) 
                 except:
@@ -454,17 +451,14 @@ def create_app():
         logout_user()
         flash("A fiókod törlésre került.")
         return redirect(url_for('index'))
-############
 
-    ######################xxxx
     @app.route('/pet/<int:pet_id>')
     def pet_detail(pet_id):
         # Lekérjük az állatot az ID alapján
         pet = Animal.query.get_or_404(pet_id)
         return render_template('pet_detail.html', pet=pet)
-    #######################
 
-    # JAVÍTÁS: Ez az útvonal tölti be az elemző oldalt (HTML)
+    #MI - Az analyze.html útvonalának megírásához AI asszisztenciát vettem igénybe.
     @app.route('/pet/analyze/<int:pet_id>')
     @login_required
     def analyze_pet(pet_id):
@@ -475,7 +469,7 @@ def create_app():
     @app.route('/api/analyze/<int:pet_id>')
     @login_required
     def api_analyze_pet(pet_id):
-        from ai_engine import calculate_similarity # Import helyben
+        from ai_engine import calculate_similarity #MI - Import pontos meghatározásához AI asszisztenciát vettem igénybe.
         
         current_pet = Animal.query.get_or_404(pet_id)
         photos = current_pet.photo_path.split(',') if current_pet.photo_path else []
@@ -483,13 +477,12 @@ def create_app():
         if not photos:
             return jsonify({"error": "Nincs fotó"}), 400
         
-        # 1. Saját kép elemzése
+        # Kép elemzése
         img_path = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{current_pet.id}', photos[0])
         result = analyze_pet_image(img_path)
         
-        # 2. Matchmaking (Keresés a többi állat között)
+        # Kép összevetése a többi állattal
         matches = []
-        # Csak azokat nézzük, amik nem az aktuális állat, és ellentétes vagy kereshető státuszúak
         other_pets = Animal.query.filter(Animal.id != pet_id).all()
         
         for other in other_pets:
@@ -498,10 +491,10 @@ def create_app():
                 other_img_path = os.path.join(app.config['UPLOAD_FOLDER'], f'pet_{other.id}', other_photos[0])
                 try:
                     # Kép alapú hasonlóság számítása
-                    score = calculate_similarity(img_path, other_img_path)
+                    score = calculate_similarity(img_path, other_img_path) #Ez a változó reprezentálja a 0 és 1 közötti értéket.
                     
-                    # Ha 75% feletti az egyezés, betesszük a találatok közé
-                    if score > 0.50:  # 0.75 helyett legyen 0.50
+                    # Ha 50% feletti az egyezés, betesszük a találatok közé
+                    if score > 0.50:
                         matches.append({
                             "id": other.id,
                             "name": other.name,
@@ -512,11 +505,10 @@ def create_app():
                     continue
 
         # Rendezés a legjobb találatok szerint
-        result['matches'] = sorted(matches, key=lambda x: x['score'], reverse=True)[:3]
+        result['matches'] = sorted(matches, key=lambda x: x['score'], reverse=True) #Nagyobb adatbázisoknál lehet a legjobb x találatot nézni. [:x]
         return jsonify(result)
     
 
-    # app.py - Keresd meg a delete_pet részt és javítsuk így:
     @app.route('/delete_pet/<int:pet_id>', methods=['POST'])
     @login_required
     def delete_pet(pet_id):
@@ -524,7 +516,6 @@ def create_app():
         if pet.user_id != current_user.id:
             return "Nincs jogosultságod!", 403
         
-        # Hibatűrőbb törlés
         if pet.photo_path:
             photo_list = pet.photo_path.split(',')
             for photo in photo_list:
@@ -544,7 +535,7 @@ def create_app():
     def all_pets():
         query = Animal.query
 
-        # 1. Típus, Fajta, Státusz szűrések
+        #Típus, Fajta, Státusz szűrések
         pet_type = request.args.get('type')
         if pet_type and pet_type != 'all':
             query = query.filter(Animal.type == pet_type)
@@ -557,7 +548,7 @@ def create_app():
         if status_search and status_search != 'all':
             query = query.filter(Animal.status == status_search)
 
-        # 2. Név, Nem, Chipszám, Helyszín szűrések
+        #Név, Nem, Chipszám, Helyszín szűrések
         name_search = request.args.get('name', '').strip()
         if name_search:
             query = query.filter(Animal.name.ilike(f'%{name_search}%'))
@@ -577,7 +568,7 @@ def create_app():
                 (Address.country.ilike(f'%{loc_search}%'))
             )
 
-        # 3. Kor szűrése
+        # Kor szűrése
         age_min = request.args.get('age_min')
         age_max = request.args.get('age_max')
         age_unit = request.args.get('age_unit')
@@ -590,7 +581,7 @@ def create_app():
             if age_unit:
                 query = query.filter(Animal.age_unit == age_unit)
 
-        # --- JAVÍTÁS: A dátumszűrést IDE tettem (a query.all() ELÉ) ---
+        # Dátumszűrést a query.all() elé kell helyezni.
         date_from = request.args.get('date_from')
         date_to = request.args.get('date_to')
 
@@ -608,7 +599,7 @@ def create_app():
             except ValueError:
                 pass
 
-        # 4. Lekérdezés végrehajtása és véletlenszerűsítés (ha nincs szűrő)
+        #Lekérdezés végrehajtása és véletlenszerűsítés (ha nincs szűrő)
         display_pets = query.all()
         
         has_active_filters = any([
