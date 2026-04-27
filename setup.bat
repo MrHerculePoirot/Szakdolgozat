@@ -1,5 +1,5 @@
 @echo off
-:: UTF-8 kódolás beállítása az ékezetek miatt
+:: UTF-8 kódolás beállítása az ékezetek miatt.
 chcp 65001 > nul
 
 echo [1/4] Virtuális környezet aktiválása...
@@ -11,7 +11,7 @@ if not exist venv (
 call venv\Scripts\activate
 
 echo [2/4] Szükséges csomagok telepítése a requirements.txt alapján...
-:: Ez a legfontosabb sor, ez telepíti a TensorFlow-t és az összes többi függőséget
+:: Ez a legfontosabb sor, ez telepíti a TensorFlow-t és az összes többi függőséget.
 pip install -r requirements.txt
 
 echo [3/4] AI környezet és TensorFlow ellenőrzése...

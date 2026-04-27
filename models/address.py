@@ -1,8 +1,6 @@
 from . import db
 
-#FIGYELEM!!! EZ MÉG NINCS KÉSZ!!
-
-class Address(db.Model):
+class Address(db.Model): #Ez fogja tárolni a földrajzi adatokat. Ilyen objektumokat kap a térkép, ami stringgé alakul.
     __tablename__ = 'addresses'
     id = db.Column(db.Integer, primary_key=True)
     country = db.Column(db.String(100))
@@ -10,8 +8,6 @@ class Address(db.Model):
     street = db.Column(db.String(255))
     postcode = db.Column(db.String(20))
 
-    #FIGYELEM!! EZ LEHET NEM KELL!!
-
-    # Google Maps koordináták
+    # Google Maps koordináták potenciális bővítéshez.
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)

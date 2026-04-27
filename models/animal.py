@@ -1,49 +1,35 @@
 from . import db
 
-#FIGYELEM!! EZ MÉG NINCS KÉSZ!!!
-
 class Animal(db.Model):
     __tablename__ = 'animals'
+    #Lentebb az állatok összes lehetséges adata.
+    #Nem kötelező, hogy mindegyiknek legyen értéke
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     age = db.Column(db.Integer)
     age_unit = db.Column(db.String(20))
     gender = db.Column(db.String(20)) 
-    status = db.Column(db.String(20)) # LOST/FOUND
+    status = db.Column(db.String(20))
     colour = db.Column(db.String(50))
     chip_id = db.Column(db.String(50))
-
-    # Ezt ide tesszük, hogy minden alosztály használhassa anélkül, hogy ütközne
+    #Ezt azért így írjuk, hogy minden alosztály használhassa anélkül, hogy ütközne.
     breed = db.Column(db.String(100))
-
-    last_seen_date = db.Column(db.Date, nullable=True) # Új mező az utolsó észleléshez
-    
+    last_seen_date = db.Column(db.Date, nullable=True)
     is_neutered = db.Column(db.Boolean, default=False)
     type = db.Column(db.String(50))
     description = db.Column(db.Text, nullable=True)
-
-
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
-    photo_path = db.Column(db.String(255), nullable=True)
-
-    
+    photo_path = db.Column(db.String(255), nullable=True)    
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    ##user = db.relationship('User', backref='animals')
-    
-
-    # A korábbi home_address_id és last_seen_address_id helyett:
+    #Lentebb lévő két változó köti össze az állatot egy konkrét címmel az addresses segítségével.
     location_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
-
-    # Adjunk hozzá egy kapcsolatot is a könnyebb eléréshez:
     location = db.relationship('Address', foreign_keys=[location_id])
-    
-    
-    chip_id = db.Column(db.String(15), nullable=True)
+    chip_id = db.Column(db.String(15), nullable=True) #A valid chipszám formátuma 15 számjegyből áll.
 
     __mapper_args__ = {
         'polymorphic_identity': 'animal',
-        'polymorphic_on': type
+        'polymorphic_on': type #Az adatbázisban egyetlen tábla van, de a type oszlop alapján a Flask tudja, hogy az adott sor faját.
     }
 
 class Dog(Animal):

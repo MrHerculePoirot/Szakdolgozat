@@ -1,5 +1,6 @@
-// static/js/status_date_handler.js
+//Ez egy moduláris segédfüggvény, amelyet több oldalon is használunk.
 (function() {
+    //MI - A dátumváltozó konténer létrehozásához AI asszisztenciát vettem igénybe.
     /**
      * Kezeli a dátumválasztó konténer láthatóságát a státusz alapján.
      * @param {string} statusSelectId - A státusz választó elem ID-ja.
@@ -15,13 +16,14 @@
             if (!statusSelect || !dateContainer) return;
 
             if (statusSelect.value === 'LOST') {
+                //Használata biztosítja, hogy a CSS szabályok ne írhassák felül a JavaScript által vezérelt láthatóságot.
+                //Legerősebb vizuális megszorítás a projektben.
                 dateContainer.style.setProperty('display', 'block', 'important');
                 if (dateInput) dateInput.required = true;
             } else {
                 dateContainer.style.setProperty('display', 'none', 'important');
                 if (dateInput) {
                     dateInput.required = false;
-                    // Keresésnél (all_pets) érdemes üríteni, de add_pet-nél is segít a tiszta beküldésben
                     dateInput.value = ''; 
                 }
             }
@@ -29,7 +31,7 @@
 
         if (statusSelect && dateContainer) {
             statusSelect.addEventListener('change', updateVisibility);
-            // Azonnali futtatás az oldal betöltésekor
+            // Azonnali futtatás az oldal betöltésekor.
             updateVisibility();
         }
     };

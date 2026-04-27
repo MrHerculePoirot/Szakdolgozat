@@ -1,16 +1,10 @@
-/**
- * Pet Finder - Regisztrációs űrlap kezelő
- */
-
+//Regisztrációs űrlap kezelő
 document.addEventListener('DOMContentLoaded', function() {
     const countrySelect = document.getElementById('countrySelect');
     const phoneInput = document.getElementById('phoneInput');
     const phoneHint = document.getElementById('phoneHint');
 
-    /**
-     * Frissíti az input placeholderét és a segédszöveget 
-     * a kiválasztott ország alapján.
-     */
+    //Frissíti az input placeholderét és a segédszöveget a kiválasztott ország alapján.
     function updatePhoneValidation() {
         if (!countrySelect || !phoneInput) return;
 
@@ -21,16 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
         phoneInput.setAttribute('minlength', requiredLength);
         phoneInput.setAttribute('maxlength', requiredLength);
         
-        // Vizuális visszajelzés
+        // Tájékoztatja a felhasználót az elvárt számsor hosszáról.
         phoneHint.innerHTML = `<i class="fas fa-info-circle"></i> Ehhez az országhoz pontosan <strong>${requiredLength}</strong> számjegy szükséges.`;
         
         // Ha már írtak be valamit, ellenőrizzük le azonnal
         validateInput();
     }
 
-    /**
-     * Valós idejű színezés a bevitel alapján
-     */
+    //Valós időben színezi a beviteli mező szegélyét.
     function validateInput() {
         const selectedOption = countrySelect.options[countrySelect.selectedIndex];
         const requiredLength = parseInt(selectedOption.getAttribute('data-len'));
@@ -39,13 +31,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentLength === 0) {
             phoneInput.style.borderColor = "#ced4da";
         } else if (currentLength === requiredLength) {
-            phoneInput.style.borderColor = "#28a745"; // Zöld, ha tökéletes
+            phoneInput.style.borderColor = "#28a745"; // Zöld, ha megfelelő.
         } else {
-            phoneInput.style.borderColor = "#dc3545"; // Piros, ha nem stimmel
+            phoneInput.style.borderColor = "#dc3545"; // Piros, ha nem megfelelő.
         }
     }
 
-    // Eseménykezelők hozzáadása
+    // MI - Az alábbi eseménykezelők létrehozásához AI asszisztenciát vettem igénybe.
     countrySelect.addEventListener('change', updatePhoneValidation);
     phoneInput.addEventListener('input', validateInput);
 
