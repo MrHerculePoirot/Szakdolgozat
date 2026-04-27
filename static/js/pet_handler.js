@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
         addPetStatus.id = 'pet_status_add';
         
         // A már meglévő handler inicializálása
-        if (typeof initStatusDateHandler === 'function') {
+        if (typeof initStatusDateHandler === 'function') { //Megnézi, hogy a központi script betöltődött-e már, mielőtt megpróbálná használni.
             initStatusDateHandler('pet_status_add', 'last_seen_container', 'last_seen_date');
         }
     }

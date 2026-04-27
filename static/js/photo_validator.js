@@ -3,9 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (photoInput) {
         photoInput.addEventListener('change', function() {
-            if (this.files.length > 4) {
+            if (this.files.length > 4) { //Itt található a beküldött képek számának korlátozása.
                 alert("Maximum 4 képet tölthetsz fel!");
-                this.value = "";
+                this.value = ""; // Ha többet próbálunk feltölteni megakadályozza a kód a képfeltöltést.
             }
         });
     }

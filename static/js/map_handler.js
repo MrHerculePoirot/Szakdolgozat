@@ -3,7 +3,7 @@ let markerCluster;
 let graticuleLines = []; 
 
 // Dinamikus koordináta-rács rajzolása (vízszintesen és függőlegesen egyaránt)
-function drawGraticule(map) {
+function drawGraticule(map) { // A szélességi és hosszúsági fokok rajzolását szürke vonalak szimbolizálják. Zoomoláshoz idomul.
     graticuleLines.forEach(line => line.setMap(null));
     graticuleLines = [];
 
@@ -69,13 +69,16 @@ function initMap() {
 
     const infoWindow = new google.maps.InfoWindow();
     const geocoder = new google.maps.Geocoder();
+    //Más színnel jelöljük az állatokat függően attól, hogy elveszett, talált vagy örökbe fogadható.
     const statusColors = { 'LOST': '#FF0000', 'FOUND': '#008000', 'ADOPTION': '#0000FF' };
 
     pets.forEach((pet, index) => {
-        setTimeout(() => {
+        setTimeout(() => { //Ez a Google Geocoding API korlátozása miatt kell. Egyszerre nem küldhetünk be egy bizonyos mennyiségnél több címet.
             geocoder.geocode({ address: pet.full_address }, (results, status) => {
                 if (status === "OK") {
                     const position = results[0].geometry.location;
+                    // Az alábbi két változó véletlen irányokba szétdobja az állatokat a térképen.
+                    // Előfordulhat, hogy csak annyi van beírva, pl. hogy "Magyarország, Pécs".
                     const jitterLat = (Math.random() - 0.5) * 0.005;
                     const jitterLng = (Math.random() - 0.5) * 0.005;
 
@@ -83,13 +86,16 @@ function initMap() {
                     let markerPath, markerScale;
 
                     if (pet.type === 'cat') {
-                        markerPath = google.maps.SymbolPath.CIRCLE;
+                        // A térkép különböző formákkal jelöli az állatfajokat.
+                        markerPath = google.maps.SymbolPath.CIRCLE; //A Google Maps API standard csak kör szimbólumot tud megjeleníteni.
                         markerScale = 7;
                     } else if (pet.type === 'dog') {
-                        markerPath = 'M -5,-5 L 5,-5 L 5,5 L -5,5 Z';
+                        //Négyzet
+                        markerPath = 'M -5,-5 L 5,-5 L 5,5 L -5,5 Z'; //MI - A négyzet megrajzolásához AI asszisztenciát vettem igénybe.
                         markerScale = 1;
                     } else {
-                        markerPath = 'M 0,-5 L 5,5 L -5,5 Z';
+                        //Háromszög
+                        markerPath = 'M 0,-5 L 5,5 L -5,5 Z'; //MI - A háromszög megrajzolásához AI asszisztenciát vettem igénybe.
                         markerScale = 1;
                     }
 
@@ -129,8 +135,8 @@ function initMap() {
 
                     markers.push(marker);
 
-                    // Clusterer inicializálása az utolsó elemnél
-                    if (index === pets.length - 1) {
+                    // Klaszterező inicializálása az utolsó elemnél
+                    if (index === pets.length - 1) { // A klaszter összevonja az egymáshoz küzrl lévő pontokat
                         markerCluster = new markerClusterer.MarkerClusterer({
                             map,
                             markers,
@@ -157,7 +163,7 @@ function initMap() {
         }, index * 300);
     });
 
-    // Szűrő logika megvalósítása a láthatóság és a Clusterer frissítésével
+    // Szűrő logika megvalósítása a láthatóság és a klaszterező frissítésével.
     document.getElementById('type-filter').addEventListener('change', function() {
         const selectedType = this.value;
         
