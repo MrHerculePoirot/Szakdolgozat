@@ -2,9 +2,7 @@ let markers = [];
 let markerCluster; 
 let graticuleLines = []; 
 
-/**
- * Dinamikus koordináta-rács rajzolása (Vízszintes és Függőleges)
- */
+// Dinamikus koordináta-rács rajzolása (vízszintesen és függőlegesen egyaránt)
 function drawGraticule(map) {
     graticuleLines.forEach(line => line.setMap(null));
     graticuleLines = [];
@@ -95,7 +93,7 @@ function initMap() {
                         markerScale = 1;
                     }
 
-                    // JAVÍTÁS: A 'type' mező hozzáadása a markerhez, hogy a szűrő lássa
+                    //MI - A marker helyes megírásához AI asszisztenciát vettem igénybe.
                     const marker = new google.maps.Marker({
                         position: { lat: position.lat() + jitterLat, lng: position.lng() + jitterLng },
                         map: map,
@@ -159,7 +157,7 @@ function initMap() {
         }, index * 300);
     });
 
-    // JAVÍTÁS: Szűrő logika fixálása a láthatóság és a Clusterer frissítésével
+    // Szűrő logika megvalósítása a láthatóság és a Clusterer frissítésével
     document.getElementById('type-filter').addEventListener('change', function() {
         const selectedType = this.value;
         
@@ -168,7 +166,6 @@ function initMap() {
             marker.setMap(isVisible ? map : null);
         });
 
-        // A fürtözőt is üríteni kell és újra feltölteni a látható markerekkel
         if (markerCluster) {
             markerCluster.clearMarkers();
             markerCluster.addMarkers(markers.filter(m => m.getMap() !== null));

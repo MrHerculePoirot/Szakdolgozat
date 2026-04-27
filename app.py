@@ -472,7 +472,7 @@ def create_app():
         from ai_engine import calculate_similarity #MI - Import pontos meghatározásához AI asszisztenciát vettem igénybe.
         
         current_pet = Animal.query.get_or_404(pet_id)
-        photos = current_pet.photo_path.split(',') if current_pet.photo_path else []
+        photos = current_pet.photo_path.split(',') if current_pet.photo_path else [] #A fényképek kinyerése a MI elemzés érdekében.
         
         if not photos:
             return jsonify({"error": "Nincs fotó"}), 400
@@ -483,8 +483,11 @@ def create_app():
         
         # Kép összevetése a többi állattal
         matches = []
+        # Ez a metódus azt akadályozza meg,
+        # hogy az AI összesonlítson egy állatot saját magával.
         other_pets = Animal.query.filter(Animal.id != pet_id).all()
         
+        # A ciklus során a rendszer végigpörgeti az összes regisztrált állatot
         for other in other_pets:
             other_photos = other.photo_path.split(',') if other.photo_path else []
             if other_photos:
@@ -502,7 +505,7 @@ def create_app():
                             "status": other.status
                         })
                 except:
-                    continue
+                    continue #Ha egy kép hibás vagy törlődött a ciklus nem áll le.
 
         # Rendezés a legjobb találatok szerint
         result['matches'] = sorted(matches, key=lambda x: x['score'], reverse=True) #Nagyobb adatbázisoknál lehet a legjobb x találatot nézni. [:x]
@@ -533,6 +536,9 @@ def create_app():
 
     @app.route('/all_pets')
     def all_pets():
+        #Ez létrehoz egy alap lekérdezést, ami még nem fut le az adatbázison.
+        #Alul lévő query.filter sorok hozzáadnak egy újabb feltételt az SQL parancshoz.
+        #A teljes parancsot az adatbázis csak a query.all() hívásakor kapja meg.
         query = Animal.query
 
         #Típus, Fajta, Státusz szűrések
@@ -573,6 +579,8 @@ def create_app():
         age_max = request.args.get('age_max')
         age_unit = request.args.get('age_unit')
 
+        # Az ellenőrzés azért fontos, mert a böngésző akkor is elküldi a mezőket,
+        # ha a felhasználó nem írt beléjük semmit
         if (age_min and age_min.strip()) or (age_max and age_max.strip()):
             if age_min and age_min.strip():
                 query = query.filter(Animal.age >= int(age_min))
@@ -600,7 +608,7 @@ def create_app():
                 pass
 
         #Lekérdezés végrehajtása és véletlenszerűsítés (ha nincs szűrő)
-        display_pets = query.all()
+        display_pets = query.all() #Itt kapja meg a teljes, összefűzött parancsot.
         
         has_active_filters = any([
             pet_type and pet_type != 'all', 
@@ -612,6 +620,8 @@ def create_app():
         if not has_active_filters and len(display_pets) > 50:
             display_pets = random.sample(display_pets, 50)
 
+        # A függvény végén látható rengeteg argumentum azért kell,
+        # hogy a HTML oldalon lévő legördülő menük (Select boxok) automatikusan feltöltődjenek.
         return render_template('all_pets.html', 
                             pets=display_pets, 
                             colors=COLORS, 
@@ -623,5 +633,5 @@ def create_app():
     return app
 
 if __name__ == '__main__':
-    app = create_app()
+    app = create_app() #Applikáció létrehozása
     app.run(debug=True)

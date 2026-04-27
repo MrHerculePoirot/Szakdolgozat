@@ -5,16 +5,17 @@ from app import create_app, db
 app = create_app()
 
 with app.app_context():
-    # 1. Migrációs mappa létrehozása, ha még nincs
+    #MI - A migrációs környezet létrehozásához - és megértéséhez - AI asszisztenciát vettem igénybe.
+    #Migrációs mappa létrehozása, ha még nincs
     if not os.path.exists('migrations'):
         print("Migrációs környezet inicializálása...")
         init()
     
-    # 2. Változások keresése (pl. az új last_seen_date mező)
+    #Változások keresése
     print("Változások keresése...")
     migrate(message="Auto migration")
     
-    # 3. Adatbázis tényleges frissítése (ADATVESZTÉS NÉLKÜL)
+    #Adatbázis tényleges frissítése
     print("Adatbázis frissítése...")
-    upgrade()
+    upgrade() #Adatvesztés nélkül
     print("Kész! Az adataid megmaradtak, a tábla bővült.")

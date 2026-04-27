@@ -2,17 +2,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('ai-analyzer-container');
     if (!container) return;
 
+    /*Ez olvassa ki a html-ből az állat azonosítóját,
+    majd küldi tovább a szervernek API kérésben.*/
     const petId = container.getAttribute('data-pet-id');
     const statusText = document.getElementById('ai-status');
     const matchesCardBody = document.querySelector('.border-secondary .card-body') || 
                            document.querySelectorAll('.card-body')[1];
 
-    // 2. PONT: Visszajelzés az indításról
+    //Visszajelzés az indításról
     statusText.innerHTML = `<i class="fas fa-microscope fa-spin"></i> A képelemző vizsgálat elindult...`;
 
+    /*A mesterséges késleltetés a user és a fejlesztő részére egyaránt,
+    hogy visszajelzést kapjanak arról, hogy a kód működik, a számitások a háttérben zajlanak.*/
     setTimeout(() => {
-        fetch(`/api/analyze/${petId}`)
-            .then(response => response.json())
+        fetch(`/api/analyze/${petId}`) //Lekéri az adatokat az app.py-ban megírt API végponttól.
+            .then(response => response.json()) //A szervertől kapott választ értelmezhető JSON-ná alakítja.
             .then(data => {
                 if (data.error) {
                     statusText.innerHTML = `<i class="fas fa-exclamation-triangle text-danger"></i> Hiba: ${data.error}`;
@@ -27,9 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
 
-                    // Matchmaking eredmények megjelenítése (3. PONT: Képelemzés alapú)
-                    // ai_analyzer.js vonatkozó része
-                    if (data.matches && data.matches.length > 0) {
+                    // MI - Az eredmények megjelenítéséhez AI asszisztenciát vettem igénybe.
+                    // Matchmaking eredmények megjelenítése
+                    if (data.matches && data.matches.length > 0) { //Egy ciklus, amely végigmegy az AI által talált hasonló állatokon, és mindegyikhez legenerálja a listában megjelenő HTML-kódot.
                         let matchesHtml = '<div class="list-group list-group-flush shadow-sm">';
                         data.matches.forEach(match => {
                             matchesHtml += `
@@ -55,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
+                //MI - A hibaszűréshez AI asszisztenciát vettem igénybe.
                 statusText.innerHTML = `<i class="fas fa-bug text-danger"></i> Hálózati hiba történt.`;
                 console.error('Error:', error);
             });
