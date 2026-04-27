@@ -1,113 +1,75 @@
-/* Általános elrendezés 
-
-RENDKÍVÜL rendezettlen
-*/
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7f6;
-    margin: 0;
-    padding: 0;
-    color: #333;
-}
-
-.navbar {
-    background-color: #2c3e50;
-    padding: 15px 20px;
+/*MY PETS html*/
+.my_pets .pet-media{
+    background-color: #34495e;
     display: flex;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    justify-content: center;
+    color: white;
 }
-
-.navbar a {
+.my_pets .pet-media i {
+    font-size: 5rem;
+}
+.my_pets .pet-info a{
     color: white;
     text-decoration: none;
-    margin-right: 20px;
-    font-weight: 500;
-    transition: color 0.3s;
+}
+.my_pets .card-actions form{
+    display: inline;
+}
+.my_pets .user-profile-card, .user_profile-page .user-profile-card {
+    border: 2px solid #3498db;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+.my_pets .user-card-header, .user_profile-page .user-card-header {
+    background-color: #3498db;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+.my_pets .btn-account-delete {
+    background-color: transparent;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    font-size: 0.85rem;
+    padding: 8px;
+    transition: all 0.3s;
+    width: auto;
+}
+.my_pets .btn-account-delete:hover {
+    background-color: #e74c3c;
+    color: white;
 }
 
-.navbar a:hover {
-    color: #27ae60;
-}
-
-.navbar span {
-    color: #ecf0f1;
-    margin-right: 20px;
-    font-style: italic;
-}
-
-.content {
-    padding: 20px;
-}
-
-/* Térkép */
-#map { 
-    height: 600px; 
+/*MAP html*/
+.map-page #map { 
+    height: 500px; 
     width: 100%; 
     border: 2px solid #2c3e50;
     border-radius: 8px;
     margin-top: 20px;
 }
-
-h1, h2 {
-    color: #2c3e50;
+.map-page #map-data {
+    display: none;
 }
-
-/* Formok stílusa (Bejelentkezés és regisztráció) */
-form {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    max-width: 400px;
-    margin-top: 20px;
-}
-
-input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
+.map-page #type-filter{
+    width: 160px;
+    padding: 6px;
     border-radius: 4px;
-    box-sizing: border-box;
-}
-
-button {
-    background-color: #27ae60;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 4px;
+    border: 1px solid #ccc;
     cursor: pointer;
-    font-size: 16px;
-    width: 100%;
-    transition: background 0.3s;
 }
-
-button:hover {
-    background-color: #219150;
-}
-
-.navbar {
-    background-color: #2c3e50;
-    padding: 10px 20px;
+.map-page .filter-wrapper{
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 10px;
 }
 
-.nav-right {
-    display: flex;
-    align-items: center;
-}
-
-.user-display {
-    color: white;
-    margin-right: 15px;
-    font-weight: bold;
-}
-
-.form-container {
+/*EDIT PET html*/
+.edit_pet-page {
     max-width: 500px;
     margin: 20px auto;
     background: white;
@@ -115,129 +77,426 @@ button:hover {
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
+.edit_pet-page #seen-at {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    border-left: 5px solid #007bff;
+}
+.edit_pet-page #breed-selector {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    font-weight: bold;
+    color: #495057;
+}
+.edit_pet-page #animal-age {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.edit_pet-page #animal-age input {
+    flex: 2;
+    min-width: 0;
+}
+.edit_pet-page #animal-age select {
+    flex: 1;
+    min-width: 100px;
+}
+.edit_pet-page #breed-data {
+    display: none;
+}
 
-.user-link {
-    color: #27ae60;
+/*ADD PET html*/
+.add_pet-page {
+    max-width: 500px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.add_pet-page form {
+    width: 100%;
+}
+.add_pet-page input, 
+.add_pet-page select, 
+.add_pet-page textarea {
+    width: 100%;
+    margin-bottom: 15px;
+    display: block;
+}
+.add_pet-page #age {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+.add_pet-page #age input,
+.add_pet-page #age select {
+    margin-bottom: 0;
+}
+.add_pet-page #last_seen_container {
+    margin-bottom: 15px;
+}
+.add_pet-page #breed-data {
+    display: none;
+}
+
+/*PET DETAIL html*/
+.pet_detail-page {
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.pet_detail-page #petCarousel{
+    max-width: 600px;
+    margin: auto;
+}
+.pet_detail-page .carousel-inner{
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.pet_detail-page .detail-info span{
+    color: #d9534f;
+    font-weight: bold;
+}
+.pet_detail-page .detail-main {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+}
+.pet_detail-page .detail-image img {
+    max-width: 400px;
+    height: auto;
+    border-radius: 8px;
+}
+
+
+
+
+/* REGISTER html */
+.register-page {
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px black;
+}
+.register-page h2.mb-4 {
+    color: #2c3e50;
+    font-weight: 700;
+}
+.register-page .alert button {
+    float: right;
+    border: none;
+    background: none;
+}
+.register-page .mb-4 {
+    border-radius: 10px;
+    border-left: 4px solid #ffc107;
+}
+.register-page .mb-3 {
+    border-radius: 10px;
+}
+.register-page .info-box {
+    background: #fdfdfd;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1rem;
+}
+.register-page .info-box-2nd{
+    display: flex;
+    gap: 8px;
+}
+.register-page #countrySelect{
+    flex: 1.5;
+    height: 48px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.register-page #phoneInput{
+    flex: 1;
+    height: 48px;
+    border-radius: 8px;
+}
+.register-page #phoneHint{
+    min-height: 20px
+}
+.register-page .btn-submit-reg {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 14px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+.register-page .login-link-container {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+.register-page .login-link-container a {
+    color: #007bff;
     font-weight: bold;
     text-decoration: none;
-    margin-right: 15px;
 }
 
-select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-}
-.pet-list {
+/*ALL PETS html*/
+.all_pets-page .main-content-layout {
     display: flex;
-    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+}
+.all_pets-page .pet-grid {
+    flex: 3;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
 }
-
-.pet-card {
-    background: white;
-    border: 1px solid #ddd;
+.all_pets-page .sidebar-filter {
+    flex: 1;
+    background: #f8f9fa;
+    padding: 20px;
     border-radius: 8px;
-    width: 250px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
-
-.pet-thumb {
+.all_pets-page .filter-group {
+    margin-bottom: 15px;
+}
+.all_pets-page .filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.all_pets-page .filter-group select, 
+.all_pets-page .filter-group input {
     width: 100%;
-    height: 150px;
-    object-fit: cover;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
 }
-
-.pet-info {
+.all_pets-page #date_filter_container {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+.all_pets-page .date-inputs-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.all_pets-page .date-inputs-wrapper input {
+    flex: 1;
+    padding: 5px;
+    font-size: 0.85rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.all_pets-page .filter-btn {
+    width: 100%;
     padding: 10px;
-}
-
-.btn-delete {
-    background: #e74c3c;
+    background-color: #007bff;
     color: white;
     border: none;
-    padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
 }
-
-.btn-delete:hover {
-    background: #c0392b;
+.all_pets-page .btn-clear {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #666;
+}
+.all_pets-page #breed-data {
+    display: none;
+}
+.all_pets-page .unit-selector {
+    margin-top: 5px;
+}
+.all_pets-page .main-content-layout, .my_pets .pet-list {
+    display: flex; gap: 30px;
+    align-items: flex-start;
+}
+.all_pets-page .pet-grid, .my_pets .pet-list {
+    flex: 3;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+    align-items: stretch;
+}
+.all_pets-page .sidebar-filter {
+    flex: 1;
+    min-width: 250px;
+    background: #f8f9fa;
+    padding: 20px; border-radius: 12px;
+    border: 1px solid #e9ecef;
+    position: sticky;
+    top: 20px;
+}
+.all_pets-page .filter-form-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.all_pets-page .status-badge {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+.all_pets-page .status-badge.lost {
+    color: #e74c3c;
+}
+.all_pets-page .status-badge.found {
+    color: #27ae60;
+}
+.all_pets-page .status-badge.adoption {
+    color: #1abae7;
 }
 
-.pet-media {
-    height: 150px;
-    background: #ecf0f1;
+/* USER PROFILE html */
+.user_profile-page .pet-media {
+    background-color: #34495e;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    color: #7f8c8d;
-}
-
-.pet-thumb {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.card-actions {
-    margin-top: 15px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.btn-edit {
-    background: #3498db;
     color: white;
-    padding: 5px 10px;
+}
+.user_profile-page .pet-media i {
+    font-size: 5rem;
+}
+.user_profile-page .pet-info a.social-link {
+    color: #27ae60;
     text-decoration: none;
-    border-radius: 4px;
-    font-size: 14px;
+}
+.user_profile-page .pet-info h3 a {
+    text-decoration: none;
+    color: inherit;
 }
 
+/* EDIT USER html*/
+.edit_user-page {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-start;
+    width: 100%;
+    min-height: 80vh;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+.edit_user-page .card {
+    width: 600px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 0 8px 30px black;
+}
+.edit_user-page .card-header {
+    background-color: #007bff;
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+.edit_user-page .card-body {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+}
+.edit_user-page form {
+    width: 100%;
+    max-width: 100%;
+}
+.edit_user-page .form-control {
+    width: 100% !important;
+    padding: 12px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+.edit_user-page label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    color: #333;
+    width: 100%;
+}
+.edit_user-page .btn-save-profile {
+    padding: 14px;
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+}
+.edit_user-page .btn-cancel-profile { 
+    padding: 10px;
+    text-decoration: none;
+    color: #6c757d;
+    border: 1px solid #6c757d;
+    border-radius: 10px;
+     display: block;
+     margin-top: 5px;
+    text-align: center;
+}
+
+
+
+/*NAVBAR*/
 .navbar {
     background-color: #2c3e50;
-    padding: 15px;
+    padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 5px black;
 }
-
-.nav-link, .user-link {
+.navbar a, .nav-link, .user-link {
     color: white;
     text-decoration: none;
     margin: 0 10px;
     font-weight: bold;
+    transition: color 0.3s;
 }
-
-.nav-link:hover {
+.navbar a:hover, .nav-link:hover {
     color: #27ae60;
 }
-
-.pet-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
-    padding: 20px 0;
+.user-display {
+    color: white;
+    margin-right: 15px;
+    font-weight: bold;
 }
 
+/* PET CARD */
 .pet-card {
     background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px black;
     transition: transform 0.2s;
     overflow: hidden;
     border: 1px solid #eee;
 }
-
 .pet-card:hover {
     transform: translateY(-5px);
 }
-
 .pet-media {
     height: 180px;
     background: #f8f9fa;
@@ -246,44 +505,748 @@ select {
     justify-content: center;
     border-bottom: 1px solid #eee;
 }
-
+.pet-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 .pet-placeholder {
     font-size: 1.2rem;
     font-weight: bold;
     color: #95a5a6;
     letter-spacing: 2px;
 }
+.pet-info {
+    padding: 15px;
+}
+.card-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
 
-.status-badge.lost { color: #e74c3c; }
-.status-badge.found { color: #27ae60; }
-.status-badge.adoption { color: #1abae7; }
+/* GOMBOK */
+.btn-edit {
+    background: #3498db;
+    color: white;
+    padding: 5px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-delete:hover {
+    background: #c0392b;
+}
 
+
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0; padding: 0;
+    color: #333;
+}
+h1, h2, .page-title {
+    color: #2c3e50;
+}
 .page-title {
     margin-bottom: 30px;
-    color: #2c3e50;
     border-bottom: 2px solid #27ae60;
     display: inline-block;
 }
 
-.pet-info p {
-    margin: 4px 0;
-    line-height: 1.2;
-    font-size: 0.95rem;
+
+/* Általános form elemek */
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
 }
+button {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+button:hover {
+    background-color: #219150;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Általános elrendezés 
+
+RENDKÍVÜL rendezettlen
+*/
+/*
+ body {
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    background-color: #f4f7f6;
+
+    margin: 0;
+
+    padding: 0;
+
+    color: #333;
+
+}
+
+
+.navbar {
+
+    background-color: #2c3e50;
+
+    padding: 15px 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+}
+
+
+.navbar a {
+
+    color: white;
+
+    text-decoration: none;
+
+    margin-right: 20px;
+
+    font-weight: 500;
+
+    transition: color 0.3s;
+
+}
+
+
+.navbar a:hover {
+
+    color: #27ae60;
+
+}
+
+
+.navbar span {
+
+    color: #ecf0f1;
+
+    margin-right: 20px;
+
+    font-style: italic;
+
+}
+
+
+.content {
+
+    padding: 20px;
+
+}
+
+
+
+h1, h2 {
+
+    color: #2c3e50;
+
+}
+
+
+/* Formok stílusa (Bejelentkezés és regisztráció) */
+
+form {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 8px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+    max-width: 400px;
+
+    margin-top: 20px;
+
+}
+
+
+input {
+
+    width: 100%;
+
+    padding: 12px;
+
+    margin: 10px 0;
+
+    border: 1px solid #ddd;
+
+    border-radius: 4px;
+
+    box-sizing: border-box;
+
+}
+
+
+button {
+
+    background-color: #27ae60;
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    width: 100%;
+
+    transition: background 0.3s;
+
+}
+
+
+button:hover {
+
+    background-color: #219150;
+
+}
+
+
+.navbar {
+
+    background-color: #2c3e50;
+
+    padding: 10px 20px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.nav-right {
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+
+.user-display {
+
+    color: white;
+
+    margin-right: 15px;
+
+    font-weight: bold;
+
+}
+
+
+
+.user-link {
+
+    color: #27ae60;
+
+    font-weight: bold;
+
+    text-decoration: none;
+
+    margin-right: 15px;
+
+}
+
+
+select {
+
+    width: 100%;
+
+    padding: 10px;
+
+    margin: 10px 0;
+
+    border-radius: 4px;
+
+    border: 1px solid #ddd;
+
+}
+
+.pet-list {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 20px;
+
+}
+
+
+.pet-card {
+
+    background: white;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    width: 250px;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+}
+
+
+.pet-thumb {
+
+    width: 100%;
+
+    height: 150px;
+
+    object-fit: cover;
+
+}
+
+
+.pet-info {
+
+    padding: 10px;
+
+}
+
+
+.btn-delete {
+
+    background: #e74c3c;
+
+    color: white;
+
+    border: none;
+
+    padding: 5px 10px;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+}
+
+
+.btn-delete:hover {
+
+    background: #c0392b;
+
+}
+
+
+.pet-media {
+
+    height: 150px;
+
+    background: #ecf0f1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-weight: bold;
+
+    color: #7f8c8d;
+
+}
+
+
+.pet-thumb {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+.card-actions {
+
+    margin-top: 15px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+}
+
+
+.btn-edit {
+
+    background: #3498db;
+
+    color: white;
+
+    padding: 5px 10px;
+
+    text-decoration: none;
+
+    border-radius: 4px;
+
+    font-size: 14px;
+
+}
+
+
+.navbar {
+
+    background-color: #2c3e50;
+
+    padding: 15px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.nav-link, .user-link {
+
+    color: white;
+
+    text-decoration: none;
+
+    margin: 0 10px;
+
+    font-weight: bold;
+
+}
+
+
+.nav-link:hover {
+
+    color: #27ae60;
+
+}
+
+
+.pet-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+
+    gap: 25px;
+
+    padding: 20px 0;
+
+}
+
+
+.pet-card {
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+    transition: transform 0.2s;
+
+    overflow: hidden;
+
+    border: 1px solid #eee;
+
+}
+
+
+.pet-card:hover {
+
+    transform: translateY(-5px);
+
+}
+
+
+.pet-media {
+
+    height: 180px;
+
+    background: #f8f9fa;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-bottom: 1px solid #eee;
+
+}
+
+
+.pet-placeholder {
+
+    font-size: 1.2rem;
+
+    font-weight: bold;
+
+    color: #95a5a6;
+
+    letter-spacing: 2px;
+
+}
+
+
+.status-badge.lost { color: #e74c3c; }
+
+.status-badge.found { color: #27ae60; }
+
+.status-badge.adoption { color: #1abae7; }
+
+
+.page-title {
+
+    margin-bottom: 30px;
+
+    color: #2c3e50;
+
+    border-bottom: 2px solid #27ae60;
+
+    display: inline-block;
+
+}
+
+
+.pet-info p {
+
+    margin: 4px 0;
+
+    line-height: 1.2;
+
+    font-size: 0.95rem;
+
+}
+
 
 .pet-info h3 {
+
     margin-bottom: 8px;
+
 }
 
-.pet-detail-container {
-    max-width: 800px;
-    margin: 20px auto;
-    background: white;
+
+.status-badge {
+
+    padding: 5px 15px;
+
+    border-radius: 20px;
+
+    font-weight: bold;
+
+}
+
+
+.filter-section {
+
+    background: #f8f9fa;
+
+    padding: 1.5rem;
+
+    border-radius: 8px;
+
+    margin-bottom: 2rem;
+
+    border: 1px solid #e9ecef;
+
+}
+
+
+.filter-form {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 1rem;
+
+    align-items: flex-end;
+
+}
+
+
+.filter-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.5rem;
+
+    flex: 1;
+
+    min-width: 150px;
+
+}
+
+
+.filter-group label {
+
+    font-size: 0.85rem;
+
+    font-weight: 600;
+
+    color: #495057;
+
+}
+
+
+.age-inputs {
+
+    display: flex;
+
+    gap: 0.3rem;
+
+}
+
+
+.filter-btn {
+
+    background-color: #28a745;
+
+    color: white;
+
+    border: none;
+
+    padding: 0.6rem 1.2rem;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+
+/* Mi- Kártyák és a kereső egymás mellé tétele */
+
+.main-content-layout {
+
+    display: flex;
+
+    gap: 30px; /* Distance */
+
+    align-items: flex-start;
+
+}
+
+
+.pet-grid {
+
+    flex: 3;
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+
+    gap: 20px;
+
+}
+
+
+/* MI - A szűrő sáv a jobb szélen */
+
+.sidebar-filter {
+
+    flex: 1;
+
+    min-width: 250px;
+
+    background: #f8f9fa;
+
     padding: 20px;
+
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+    border: 1px solid #e9ecef;
+
+    position: sticky; /* Gördítéskor is látható marad felül */
+
+    top: 20px;
+
 }
 
+
+.filter-form-sidebar {
+
+    display: flex;
+
+    flex-direction: column; /* Egymás alá kerülnek a mezők a szűk sávban */
+
+    gap: 15px;
+
+}
+
+
+.filter-group input, .filter-group select {
+    width: 100%; /* Szélességkitöltés */
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+}
+
+
+.btn-clear {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-decoration: none;
+}
 .detail-main {
     display: flex;
     gap: 30px;
@@ -296,112 +1259,15 @@ select {
     border-radius: 8px;
 }
 
-.status-badge {
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-}
-
-.filter-section {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    border: 1px solid #e9ecef;
-}
-
-.filter-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: flex-end;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-    min-width: 150px;
-}
-
-.filter-group label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #495057;
-}
-
-.age-inputs {
-    display: flex;
-    gap: 0.3rem;
-}
-
-.filter-btn {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-/* Mi- Kártyák és a kereső egymás mellé tétele */
-.main-content-layout {
-    display: flex;
-    gap: 30px; /* Distance */
-    align-items: flex-start;
-}
-
-.pet-grid {
-    flex: 3;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-/* MI - A szűrő sáv a jobb szélen */
-.sidebar-filter {
-    flex: 1;
-    min-width: 250px;
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #e9ecef;
-    position: sticky; /* Gördítéskor is látható marad felül */
-    top: 20px;
-}
-
-.filter-form-sidebar {
-    display: flex;
-    flex-direction: column; /* Egymás alá kerülnek a mezők a szűk sávban */
-    gap: 15px;
-}
-
-.filter-group input, .filter-group select {
-    width: 100%; /* Szélességkitöltés */
-    padding: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-}
-
-.btn-clear {
-    display: block;
-    text-align: center;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #6c757d;
-    text-decoration: none;
-}
 
 /*ddddddddddddddddd*/
-
 .user-profile-card {
     border: 2px solid #3498db;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
 }
+
 
 .user-card-header {
     background-color: #3498db;
@@ -441,24 +1307,7 @@ select {
     padding: 8px;
     transition: all 0.3s;
 }
-
 .btn-account-delete:hover {
     background-color: #e74c3c;
     color: white;
-}
-
-/* Biztosítjuk, hogy a rács szépen kezelje az elemeket */
-.pet-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px 0;
-    align-items: stretch;
-}
-
-/* Igazítás a korábbi navbar hiba javításához */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }

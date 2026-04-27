@@ -34,29 +34,19 @@ function drawGraticule(map) {
     const ne = bounds.getNorthEast();
     const sw = bounds.getSouthWest();
 
-    // Számított határok a rácshoz
     const latStart = Math.floor(sw.lat() / step) * step;
     const latEnd = Math.ceil(ne.lat() / step) * step;
     const lngStart = Math.floor(sw.lng() / step) * step;
     const lngEnd = Math.ceil(ne.lng() / step) * step;
 
-    // 1. VÍZSZINTES CSÍKOK (Szélességi körök) - Stabilizált szakaszokkal
     for (let lat = latStart; lat <= latEnd; lat += step) {
-        const path = [
-            {lat: lat, lng: -180}, 
-            {lat: lat, lng: 0}, 
-            {lat: lat, lng: 180}
-        ];
+        const path = [{lat: lat, lng: -180}, {lat: lat, lng: 0}, {lat: lat, lng: 180}];
         const line = new google.maps.Polyline({...lineOptions, path: path});
         graticuleLines.push(line);
     }
 
-    // 2. FÜGGŐLEGES CSÍKOK (Hosszúsági körök)
     for (let lng = lngStart; lng <= lngEnd; lng += step) {
-        const path = [
-            {lat: -85, lng: lng}, 
-            {lat: 85, lng: lng}
-        ];
+        const path = [{lat: -85, lng: lng}, {lat: 85, lng: lng}];
         const line = new google.maps.Polyline({...lineOptions, path: path});
         graticuleLines.push(line);
     }
@@ -77,7 +67,6 @@ function initMap() {
         zoomControl: true
     });
 
-    // Autofrissítés
     map.addListener('idle', () => drawGraticule(map));
 
     const infoWindow = new google.maps.InfoWindow();
@@ -106,9 +95,11 @@ function initMap() {
                         markerScale = 1;
                     }
 
+                    // JAVÍTÁS: A 'type' mező hozzáadása a markerhez, hogy a szűrő lássa
                     const marker = new google.maps.Marker({
                         position: { lat: position.lat() + jitterLat, lng: position.lng() + jitterLng },
                         map: map,
+                        type: pet.type, 
                         icon: {
                             path: markerPath,
                             fillColor: markerColor,
@@ -140,6 +131,7 @@ function initMap() {
 
                     markers.push(marker);
 
+                    // Clusterer inicializálása az utolsó elemnél
                     if (index === pets.length - 1) {
                         markerCluster = new markerClusterer.MarkerClusterer({
                             map,
@@ -167,13 +159,16 @@ function initMap() {
         }, index * 300);
     });
 
+    // JAVÍTÁS: Szűrő logika fixálása a láthatóság és a Clusterer frissítésével
     document.getElementById('type-filter').addEventListener('change', function() {
         const selectedType = this.value;
+        
         markers.forEach(marker => {
             const isVisible = selectedType === 'all' || marker.type === selectedType;
             marker.setMap(isVisible ? map : null);
         });
 
+        // A fürtözőt is üríteni kell és újra feltölteni a látható markerekkel
         if (markerCluster) {
             markerCluster.clearMarkers();
             markerCluster.addMarkers(markers.filter(m => m.getMap() !== null));

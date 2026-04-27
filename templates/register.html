@@ -3,56 +3,56 @@
 {% block title %}Pet Finder - Regisztráció{% endblock %}
 
 {% block content %}
-<div class="form-container" style="max-width: 450px; margin: 40px auto; padding: 25px; background: white; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1);">
-    <h2 class="mb-4 text-center" style="color: #2c3e50; font-weight: 700;">Regisztráció</h2>
+<div class="container register-page">
+    <h2 class="mb-4 text-center">Regisztráció</h2>
     
     <!-- Csak a legfrissebb üzenet megjelenítése -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert" style="border-radius: 10px; border-left: 4px solid #ffc107;">
+        <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
           {{ messages[-1] }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Bezárás" style="float: right; border: none; background: none;">&times;</button>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Bezárás">&times;</button>
         </div>
       {% endif %}
     {% endwith %}
 
     <form method="POST" id="regForm">
         <div class="mb-3">
-            <input type="text" name="username" placeholder="Felhasználónév" required class="form-control py-3 shadow-sm" style="border-radius: 10px;">
+            <input type="text" name="username" placeholder="Felhasználónév" required class="form-control py-3 shadow-sm">
         </div>
         <div class="mb-3">
-            <input type="email" name="email" placeholder="Email cím" required class="form-control py-3 shadow-sm" style="border-radius: 10px;">
+            <input type="email" name="email" placeholder="Email cím" required class="form-control py-3 shadow-sm">
         </div>
-        <div class="mb-4">
-            <input type="password" name="password" placeholder="Jelszó" required class="form-control py-3 shadow-sm" style="border-radius: 10px;">
+        <div class="mb-3">
+            <input type="password" name="password" placeholder="Jelszó" required class="form-control py-3 shadow-sm">
         </div>
         
-        <div class="p-3 mb-4" style="background: #fdfdfd; border: 1px solid #eee; border-radius: 12px;">
+        <div class="p-3 mb-4 info-box">
             <label class="small text-muted font-weight-bold mb-2 d-block">TELEFONSZÁM BEÁLLÍTÁSA</label>
-            <div class="d-flex gap-2" style="display: flex; gap: 8px;">
-                <select name="country_idx" id="countrySelect" class="form-select" style="flex: 1.5; height: 48px; border-radius: 8px; cursor: pointer;">
+            <div class="d-flex gap-2 info-box-2nd">
+                <select name="country_idx" id="countrySelect" class="form-select">
                     {% for country in countries %}
                         <option value="{{ loop.index0 }}" data-len="{{ country.length }}">
                             {{ country.display }}
                         </option>
                     {% endfor %}
                 </select>
-                <input type="text" name="phone_number_local" id="phoneInput" placeholder="Szám" required class="form-control" style="flex: 1; height: 48px; border-radius: 8px;">
+                <input type="text" name="phone_number_local" id="phoneInput" placeholder="Szám" required class="form-control">
             </div>
-            <div id="phoneHint" class="mt-2 text-info small" style="min-height: 20px;"></div>
+            <div id="phoneHint" class="mt-2 text-info small"></div>
         </div>
 
         <div class="mb-4">
-            <input type="text" name="social_link" placeholder="Közösségi média link (opcionális)" class="form-control py-3 shadow-sm" style="border-radius: 10px;">
+            <input type="text" name="social_link" placeholder="Közösségi média link (opcionális)" class="form-control py-3 shadow-sm">
         </div>
             
-        <button type="submit" class="btn btn-primary btn-lg w-100 shadow" style="border-radius: 10px; font-weight: 600; padding: 14px;">
+        <button type="submit" class="btn btn-primary btn-lg w-100 shadow">
             Regisztráció és hitelesítés
         </button>
     </form>
     
     <p class="mt-4 text-center text-muted small">
-        Már van fiókod? <a href="/login" class="text-primary fw-bold" style="text-decoration: none;">Jelentkezz be!</a>
+        Már van fiókod? <a href="/login" class="text-primary fw-bold">Jelentkezz be!</a>
     </p>
 </div>
 

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="form-container">
+<div class="container edit_pet-page">
     <h2>Adatok módosítása</h2>
     <form method="POST">
         <label>Név:</label>
@@ -14,17 +14,16 @@
         </select>
 
         {% if pet.status == 'LOST' and pet.last_seen_date %}
-        <div style="background-color: #e9ecef; padding: 10px; border-radius: 4px; margin-bottom: 15px; border-left: 5px solid #007bff;">
+        <div id="seen-at">
             <strong>Utolsó észlelés ideje (rögzített adat):</strong> 
             <span>{{ pet.last_seen_date.strftime('%Y-%m-%d') }}</span>
         </div>
         {% endif %}
 
         <label>Faj:</label>
-        <input type="text" 
+        <input id="breed-selector" type="text" 
             value="{{ 'Macska' if pet.type == 'cat' else 'Kutya' if pet.type == 'dog' else 'Egyéb' }}" 
-            readonly 
-            style="background-color: #e9ecef; cursor: not_allowed; font-weight: bold; color: #495057;">
+            readonly>
         <input type="hidden" name="type" value="{{ pet.type }}">
 
 <label>Fajta:</label>
@@ -42,10 +41,9 @@
             data-cats='{{ cat_breeds | tojson | safe }}' 
             data-others='{{ other_breeds | tojson | safe }}'
             data-current-breed="{{ pet.breed }}"
-            data-is-filter="false"
-            style="display: none;">
+            data-is-filter="false">
         </div>
-        <script>document.getElementsByName('type')[0].id = 'pet_type';</script>
+        <script src="{{ url_for('static', filename='js/edit_pet_handler.js') }}"></script>
         <script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
 
         <label>Neme:</label>
@@ -86,9 +84,9 @@
         </div>
 
         <label>Állat kora:</label>
-        <div style="display: flex; gap: 10px;">
-            <input type="number" name="age" value="{{ pet.age or '' }}" placeholder="Mennyi idős?" min="0" style="flex: 2;">
-            <select name="age_unit" style="flex: 1;">
+        <div id="animal-age">
+            <input type="number" name="age" value="{{ pet.age or '' }}" placeholder="Mennyi idős?" min="0">
+            <select name="age_unit">
                 <option value="nap" {% if pet.age_unit == 'nap' %}selected{% endif %}>nap</option>
                 <option value="hét" {% if pet.age_unit == 'hét' %}selected{% endif %}>hét</option>
                 <option value="hónap" {% if pet.age_unit == 'hónap' or not pet.age_unit %}selected{% endif %}>hónap</option>

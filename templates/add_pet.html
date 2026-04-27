@@ -3,7 +3,7 @@
 {% block title %}Új állat rögzítése{% endblock %}
 
 {% block content %}
-<div class="form-container">
+<div class="container add_pet-page">
     <h2>Új állat bejelentése</h2>
     <form method="POST" enctype="multipart/form-data">
         <label>Státusz:</label>
@@ -56,13 +56,13 @@
         </div>
 
         <label>Állat kora:</label>
-        <div style="display: flex; gap: 10px;">
-            <input type="number" name="age" placeholder="Kor" min="0" style="flex: 2;">
-            <select name="age_unit" style="flex: 1;">
+        <div id= "age">
+            <input type="number" name="age" placeholder="Kor" min="0">
+            <select name="age_unit">
                 <option value="nap">nap</option>
                 <option value="hét">hét</option>
-                <option value="hónap" selected>hónap</option>
-                <option value="év">év</option>
+                <option value="hónap">hónap</option>
+                <option value="év" selected>év</option>
             </select>
         </div>
 
@@ -78,18 +78,13 @@
         <script src="{{ url_for('static', filename='js/photo_validator.js') }}"></script>
         <script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
 
-        <div id="last_seen_container" style="display: none; margin-bottom: 15px;">
+        <div id="last_seen_container">
             <label>Mikor látták utoljára? (Kötelező):</label>
             <input type="date" name="last_seen_date" id="last_seen_date">
         </div>
 
         <script src="{{ url_for('static', filename='js/status_date_handler.js') }}"></script>
-        <script>
-            const addPetStatus = document.querySelector('select[name="status"]');
-            if (addPetStatus) addPetStatus.id = 'pet_status_add';
-            
-            initStatusDateHandler('pet_status_add', 'last_seen_container', 'last_seen_date');
-        </script>
+        <script src="{{ url_for('static', filename='js/add_pet_handler.js') }}"></script>
 
         <label>Leírás:</label>
         <textarea name="description" rows="4"></textarea>
@@ -102,8 +97,7 @@
      data-dogs='{{ dog_breeds | tojson | safe }}' 
      data-cats='{{ cat_breeds | tojson | safe }}' 
      data-others='{{ other_breeds | tojson | safe }}'
-     data-is-filter="false"
-     style="display: none;">
+     data-is-filter="false">
 </div>
 <script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
 

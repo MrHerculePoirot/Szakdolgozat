@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="container all_pets-page">
     <h2 class="page-title">Aktuális bejelentések</h2>
 
     <div class="main-content-layout">
@@ -70,19 +70,16 @@
                     </select>
                 </div>
 
-                <div id="date_filter_container" style="display: none; margin-top: 10px; margin-bottom: 15px;">
-                    <label style="font-size: 0.9rem; color: #555; margin-bottom: 5px; display: block;">Eltűnés ideje:</label>
-                    <div style="display: flex; gap: 8px; align-items: center; max-width: 300px;"> <input type="date" name="date_from" value="{{ request.args.get('date_from', '') }}" 
-                            style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem;">
-                        <span style="color: #888;">-</span>
-                        <input type="date" name="date_to" value="{{ request.args.get('date_to', '') }}" 
-                            style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem;">
+                <div id="date_filter_container">
+                    <label>Eltűnés ideje:</label>
+                    <div> <input type="date" name="date_from" value="{{ request.args.get('date_from', '') }}">
+                        <span>-</span>
+                        <input type="date" name="date_to" value="{{ request.args.get('date_to', '') }}">
                     </div>
                 </div>
 
                 <script src="{{ url_for('static', filename='js/status_date_handler.js') }}"></script>
                 <script>
-                    // Itt már megvan a 'status_filter' ID, csak meghívjuk a közös kezelőt
                     initStatusDateHandler('status_filter', 'date_filter_container');
                 </script>
 
@@ -147,8 +144,7 @@
      data-cats='{{ cat_breeds | tojson | safe }}' 
      data-others='{{ other_breeds | tojson | safe }}'
      data-current-breed="{{ request.args.get('breed', '') }}"
-     data-is-filter="true"
-     style="display: none;">
+     data-is-filter="true">
 </div>
 <script src="{{ url_for('static', filename='js/breed_selector.js') }}"></script>
 

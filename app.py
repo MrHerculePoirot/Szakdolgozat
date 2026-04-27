@@ -136,26 +136,19 @@ def create_app():
         
         for pet in all_pets:
             if pet.location:
-                loc = pet.location
-                full_addr = f"{loc.postcode} {loc.city}, {loc.street}, {loc.country}"
-                owner_phone = "Nincs megadva"
-                if pet.owner and pet.owner.phone:
-                    owner_phone = pet.owner.phone
-                
+                # ... meglévő kódod ...
                 pets_metadata.append({
                     'id': pet.id,
                     'name': pet.name or "Névtelen állat",
                     'status': pet.status,
                     'full_address': f"{pet.location.city}, {pet.location.street}",
-                    'type': pet.type,
-                    'photo_path': pet.photo_path, # ÚJ: Kell a kártyához
-                    'owner_phone': owner_phone    # ÚJ: Kell a kártyához
-                 })
+                    'type': pet.type,  # EZT KELL HOZZÁADNI (dog, cat, etc.)
+                    'photo_path': pet.photo_path,
+                    'owner_phone': pet.owner.phone if pet.owner else "Nincs megadva"
+                })
         
-        # Itt a pets_metadata-t KELL átadni, amit az imént töltöttél fel adatokkal!
         return render_template('map.html', api_key=api_key, pets_metadata=pets_metadata)
     
-  
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
