@@ -7,7 +7,6 @@
     <hr>
     
     <div class="pet-list">
-        <!-- 1. FELHASZNÁLÓI PROFIL KÁRTYA (SZERKESZTÉS NÉLKÜL) -->
         <div class="pet-card">
             <div class="pet-media">
                 <i class="fas fa-user-circle"></i>
@@ -27,7 +26,6 @@
             </div>
         </div>
 
-        <!-- 2. AZ ADOTT FELHASZNÁLÓ ÁLLATAI -->
         {% for pet in pets %}
         <div class="pet-card">
             <div class="pet-media">
@@ -47,7 +45,6 @@
                 <p>{{ pet.breed }} - {{ pet.colour }}</p>
                 <p><small>Chip: {{ pet.chip_id or 'Nincs' }}</small></p>
                 
-                <!-- Gombok eltávolítva -->
             </div>
         </div>
         {% endfor %}

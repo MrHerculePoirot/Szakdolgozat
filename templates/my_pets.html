@@ -5,7 +5,6 @@
     <h2 class="page-title"><i class="fas fa-list"></i> Saját bejelentéseim</h2>
     
     <div class="pet-list">
-        <!-- 1. FELHASZNÁLÓI PROFIL KÁRTYA - AZ ELSŐ HELYEN -->
         <div class="pet-card">
             <div class="pet-media">
                 <i class="fas fa-user-circle"></i>
@@ -23,10 +22,8 @@
                 </p>
                 
                 <div class="card-actions">
-                    <!-- Szerkesztés gomb most már a profil szerkesztő oldalra mutat -->
                     <a href="{{ url_for('edit_user') }}" class="btn-edit">Szerkesztés</a>
                     
-                    <!-- Fiók törlése gomb -->
                     <form action="{{ url_for('delete_account') }}" method="POST">
                         <button type="submit" class="btn-delete" onclick="return confirm('VIGYÁZAT! A fiók törlésével az ÖSSZES bejelentett állatod és adatod véglegesen törlődik. Biztosan folytatod?')">Törlés</button>
                     </form>
@@ -34,12 +31,10 @@
             </div>
         </div>
 
-        <!-- 2. REGISZTRÁLT ÁLLATOK LISTÁZÁSA -->
         {% for pet in pets %}
         <div class="pet-card">
             <div class="pet-media">
                 {% if pet.photo_path %}
-                    <!--Szétvágjuk a listát és az első képet vesszük ki borítóképnek-->
                     {% set photos = pet.photo_path.split(',') %}
                     <img src="{{ url_for('static', filename='uploads/pet_' ~ pet.id ~ '/' ~ photos[0]) }}" class="pet-thumb" alt="{{ pet.name }}">
                 {% else %}
