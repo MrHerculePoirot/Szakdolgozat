@@ -17,12 +17,11 @@
                 <p><strong>Mobil:</strong> {{ user.phone or "Nincs megadva" }}</p>
                 <p><strong>Social:</strong> 
                     {% if user.social_link %}
-                        <a href="{{ user.social_link }}" target="_blank">Link megnyitása</a>
+                        <a href="{{ user.social_link }}" target="_blank" class="social-link">Link megnyitása</a>
                     {% else %}
                         <span class="text-muted">Nincs megadva</span>
                     {% endif %}
                 </p>
-                
             </div>
         </div>
 
@@ -44,7 +43,6 @@
                 <p><strong>Státusz:</strong> {{ pet.status }}</p>
                 <p>{{ pet.breed }} - {{ pet.colour }}</p>
                 <p><small>Chip: {{ pet.chip_id or 'Nincs' }}</small></p>
-                
             </div>
         </div>
         {% endfor %}
