@@ -18,5 +18,6 @@ echo [3/4] AI környezet és TensorFlow ellenőrzése...
 python -c "import tensorflow as tf; print('TensorFlow verzió:', tf.__version__)"
 
 echo [4/4] Flask szerver indítása...
+python -m pytest
 python app.py
 pause
